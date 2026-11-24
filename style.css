@@ -48,8 +48,11 @@ html {
   scroll-behavior: smooth;
   scroll-padding-top: calc(var(--header-h) + 22px);
   -webkit-text-size-adjust: 100%;
+  -webkit-tap-highlight-color: rgba(126, 107, 255, 0.18);
   color-scheme: dark;
 }
+
+a, button, summary, input, select, textarea { touch-action: manipulation; }
 
 body {
   margin: 0;
@@ -223,6 +226,7 @@ kbd {
   align-items: center;
   gap: 7px;
   padding: 8px 13px;
+  min-height: 40px;
   font-size: 13.5px;
   font-weight: 600;
   border: 1px solid var(--border-strong);
@@ -254,7 +258,7 @@ kbd {
 }
 
 .mobile-nav .menu a {
-  padding: 9px 12px;
+  padding: 11px 12px;
   border-radius: 8px;
   font-size: 14px;
   color: var(--text-dim);
@@ -327,11 +331,9 @@ kbd {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  font-family: var(--mono);
-  font-size: 12px;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--accent-text);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-dim);
   margin-bottom: 16px;
 }
 
@@ -394,11 +396,9 @@ kbd {
 }
 
 .toc-title {
-  font-family: var(--mono);
-  font-size: 11px;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--text-mute);
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--text-dim);
   margin-bottom: 10px;
 }
 
@@ -418,11 +418,11 @@ kbd {
 .toc .sub { padding-left: 28px; font-size: 12.5px; color: var(--text-mute); }
 .toc .sub.active { color: var(--text); }
 
-main { min-width: 0; counter-reset: sec; }
+main { min-width: 0; }
 
 section { margin-bottom: 74px; }
 main > section {
-  counter-increment: sec;
+  counter-increment: none;
 }
 
 .section-head { margin-bottom: 22px; }
@@ -433,17 +433,6 @@ main > section {
   letter-spacing: -0.015em;
   margin: 0 0 8px;
   text-wrap: balance;
-}
-
-.section-head h2::before {
-  content: "0" counter(sec);
-  display: block;
-  font-family: var(--mono);
-  font-size: 12px;
-  font-weight: 500;
-  letter-spacing: 0.18em;
-  color: var(--accent-text);
-  margin-bottom: 8px;
 }
 
 .section-head p { color: var(--text-dim); margin: 0; max-width: 70ch; }
@@ -471,41 +460,54 @@ main p a:hover, main li a:hover, main td a:hover, .note a:hover, details p a:hov
   text-decoration-color: currentColor;
 }
 
-/* ---------- kartlar ---------- */
+/* ---------- kartlar: teknik dizin ---------- */
 
-.grid { display: grid; gap: 14px; }
+.grid { display: grid; gap: 0 34px; }
 .grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 
+/* Modül ızgarası tek tek kutular yerine bir dizin listesi gibi okunur. */
+#ozellikler .grid-3 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+
 .card {
-  border: 1px solid var(--border);
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.015));
-  border-radius: var(--radius);
-  padding: 18px 20px;
-  transition: border-color 0.2s var(--ease), transform 0.2s var(--ease), background 0.2s var(--ease);
+  border: 0;
+  border-top: 1px solid var(--border);
+  background: none;
+  border-radius: 0;
+  padding: 15px 0 17px;
+  transition: border-color 0.18s var(--ease);
 }
 
 .card:hover {
-  border-color: var(--border-strong);
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.02));
-  transform: translateY(-2px);
+  border-top-color: var(--accent);
+  background: none;
+  transform: none;
 }
 
-.card h3, .card h4 { margin: 0 0 6px; font-size: 15px; letter-spacing: -0.01em; }
+.card h3, .card h4 { margin: 0 0 5px; font-size: 15px; letter-spacing: -0.01em; }
 .card p { margin: 0; font-size: 14px; color: var(--text-dim); }
 
-.card .ico {
-  width: 32px;
-  height: 32px;
-  border-radius: 9px;
-  display: grid;
-  place-items: center;
-  background: var(--accent-soft);
-  color: var(--accent-text);
-  margin-bottom: 12px;
+#ozellikler .card h3 {
+  font-family: var(--mono);
+  font-size: 12.5px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
 }
 
-.card .ico svg { width: 17px; height: 17px; }
+#nedir .card h3 { font-size: 15.5px; }
+
+.card .ico {
+  width: auto;
+  height: auto;
+  border-radius: 0;
+  display: block;
+  background: none;
+  color: var(--accent-text);
+  margin-bottom: 10px;
+  line-height: 0;
+}
+
+.card .ico svg { width: 20px; height: 20px; }
 
 .note {
   border-left: 3px solid var(--accent);
@@ -531,7 +533,7 @@ main p a:hover, main li a:hover, main td a:hover, .note a:hover, details p a:hov
   margin: 0 0 18px;
 }
 
-table { width: 100%; border-collapse: collapse; font-size: 14px; min-width: 520px; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; min-width: 520px; font-variant-numeric: tabular-nums; }
 
 th, td {
   text-align: left;
@@ -541,12 +543,9 @@ th, td {
 }
 
 th {
-  font-family: var(--mono);
-  font-size: 11px;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
+  font-size: 12.5px;
   color: var(--text-mute);
-  font-weight: 500;
+  font-weight: 600;
   background: rgba(255, 255, 255, 0.02);
   white-space: nowrap;
 }
@@ -732,7 +731,7 @@ footer a:hover { color: var(--text); }
 .to-top {
   position: fixed;
   right: 22px;
-  bottom: 22px;
+  bottom: calc(22px + env(safe-area-inset-bottom, 0px));
   z-index: 35;
   width: 44px;
   height: 44px;
@@ -765,6 +764,7 @@ body.lb-open { overflow: hidden; }
   align-items: center;
   justify-content: center;
   padding: 28px;
+  overscroll-behavior: contain;
 }
 
 .lightbox.on { display: flex; }
@@ -824,7 +824,7 @@ body.lb-open { overflow: hidden; }
   .hero-actions .btn { flex: 1 1 auto; justify-content: center; }
   section { margin-bottom: 58px; }
   .cmd-grid { grid-template-columns: 1fr; }
-  .to-top { right: 14px; bottom: 14px; }
+  .to-top { right: 14px; bottom: calc(14px + env(safe-area-inset-bottom, 0px)); }
 
   /* diyagramlar küçültülüp okunmaz hâle gelmesin: yatay kaydırma */
   .diagram { padding: 12px; }

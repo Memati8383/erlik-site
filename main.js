@@ -73,6 +73,7 @@
       .then(function () {
         /* Diyagramlar yüksekliği değiştirdiği için çapa hedefi kaymış olabilir. */
         scheduleHashCorrection();
+        syncScrollableRegions();
       })
       .catch(function (err) {
         console.error("mermaid:", err);
@@ -101,7 +102,7 @@
           loadMermaid();
         }
       },
-      { rootMargin: "800px 0px" }
+      { rootMargin: "300px 0px" }
     );
 
     diagrams.forEach(function (el) { diagramObserver.observe(el); });
@@ -304,6 +305,44 @@
       a.rel = "noopener noreferrer";
     }
   });
+
+  /* ---------- yatay kaydırılabilir bölgeler ---------- */
+  /* Diyagram/tablo/kod blokları yatay taşarsa klavyeyle de kaydırılabilmeli. */
+  var scrollables = document.querySelectorAll(".diagram, .table-wrap, pre");
+
+  function syncScrollableRegions() {
+    scrollables.forEach(function (el) {
+      var scrollable = el.scrollWidth > el.clientWidth + 2;
+
+      if (scrollable) {
+        if (el.tabIndex !== 0) el.tabIndex = 0;
+        el.setAttribute("role", "group");
+        if (!el.getAttribute("aria-label")) {
+          var cap = el.querySelector("figcaption");
+          el.setAttribute(
+            "aria-label",
+            cap ? cap.textContent.trim() : "Yatay kaydırılabilir içerik"
+          );
+        }
+      } else if (el.getAttribute("role") === "group") {
+        el.removeAttribute("tabindex");
+        el.removeAttribute("role");
+        el.removeAttribute("aria-label");
+      }
+    });
+  }
+
+  syncScrollableRegions();
+
+  var scrollResizeTick = false;
+  window.addEventListener("resize", function () {
+    if (scrollResizeTick) return;
+    scrollResizeTick = true;
+    requestAnimationFrame(function () {
+      scrollResizeTick = false;
+      syncScrollableRegions();
+    });
+  }, { passive: true });
 
   /* ---------- doğrudan gelen çapa bağlantısı ---------- */
   /* Tarayıcı hash'e yazı tipleri yüklenmeden atlar; metin yeniden akınca
