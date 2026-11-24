@@ -1,0 +1,862 @@
+﻿<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ERLİK — Android filo komuta paneli</title>
+<meta name="description" content="ERLİK: Win32 + DirectX 11 + Dear ImGui ile çizilen Android filo komuta paneli. Kurulum, bağlantı, kullanım ve sorun giderme rehberi.">
+<link rel="icon" href="assets/erlik-mark.png">
+<meta name="theme-color" content="#07080c">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<a class="skip-link" href="#main">İçeriğe geç</a>
+
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="#top"><img src="assets/erlik-mark.png" alt=""> ERLİK</a>
+    <nav class="top-nav" aria-label="Ana gezinme">
+      <a href="#nedir">Nedir</a>
+      <a href="#kurulum">Kurulum</a>
+      <a href="#baglanti">Bağlantı</a>
+      <a href="#kullanim">Kullanım</a>
+      <a href="#komutlar">Komutlar</a>
+      <a href="#sorun">Sorun giderme</a>
+      <a href="#sss">SSS</a>
+    </nav>
+    <details class="mobile-nav">
+      <summary aria-label="Menüyü aç">
+        Menü
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+      </summary>
+      <nav class="menu" aria-label="Mobil gezinme">
+        <a href="#nedir">Nedir</a>
+        <a href="#kurulum">Kurulum</a>
+        <a href="#baglanti">Bağlantı</a>
+        <a href="#kullanim">Kullanım</a>
+        <a href="#komutlar">Komutlar</a>
+        <a href="#sorun">Sorun giderme</a>
+        <a href="#sss">SSS</a>
+      </nav>
+    </details>
+    <a class="btn header-github" href="https://github.com/Memati8383/erlik" target="_blank" rel="noopener">GitHub</a>
+  </div>
+  <div class="scroll-progress" aria-hidden="true"><span></span></div>
+</header>
+
+<section class="hero" id="top" aria-labelledby="hero-title">
+  <div>
+    <span class="eyebrow">v1.0.0 · Windows 10 / 11</span>
+    <h1 id="hero-title">Android filo <span>komuta paneli</span></h1>
+    <p class="lede">
+      ERLİK, <code>erlikd</code> sunucusuna bağlanan Android cihazları tek bir karanlık arayüzden
+      izlemek, yönetmek ve komuta etmek için yazılmış bir masaüstü konsoludur. Arayüz tamamen
+      Dear ImGui ile çizilir; Win32 + DirectX 11 üzerinde çalışır, harici DLL gerektirmez.
+    </p>
+    <div class="hero-actions">
+      <a class="btn btn-primary" href="https://github.com/Memati8383/erlik/releases/latest">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>
+        İndir — ERLIK-1.0.0.exe
+      </a>
+      <a class="btn" href="#kurulum">Kurulum rehberi</a>
+      <a class="btn" href="#baglanti">Bağlantı nasıl kurulur</a>
+    </div>
+    <div class="badges">
+      <span class="badge">C++17 · MSVC v143</span>
+      <span class="badge">Dear ImGui 1.91.9b</span>
+      <span class="badge">DirectX 11</span>
+      <span class="badge">/MT statik</span>
+      <span class="badge">7 dil</span>
+      <span class="badge">~14.2k satır</span>
+    </div>
+  </div>
+  <div class="hero-shot">
+    <img loading="eager" fetchpriority="high" decoding="async" width="1060" height="660" src="assets/shots/02-dashboard.png" alt="ERLİK komuta panosu">
+  </div>
+</section>
+
+<div class="layout">
+  <aside class="toc">
+    <div class="toc-title">İçindekiler</div>
+    <a href="#nedir">Nedir?</a>
+    <a href="#ozellikler">Özellikler</a>
+    <a href="#kurulum">Kurulum ve çalıştırma</a>
+    <a href="#baglanti">Bağlantı kurma</a>
+    <a href="#kullanim">Kullanım</a>
+    <a class="sub" href="#pano">Pano</a>
+    <a class="sub" href="#cihazlar">Cihazlar</a>
+    <a class="sub" href="#detay">Cihaz detayı</a>
+    <a class="sub" href="#apk">APK üretimi</a>
+    <a class="sub" href="#tunel">Genel erişim</a>
+    <a href="#komutlar">Komut kataloğu</a>
+    <a href="#sorun">Sorun giderme</a>
+    <a href="#sss">SSS</a>
+    <a href="#lisans">Lisans</a>
+  </aside>
+
+  <main id="main">
+
+  <!-- ============ NEDİR ============ -->
+  <section id="nedir">
+    <div class="section-head">
+      <h2>Nedir?</h2>
+      <p>Üç parçadan oluşan bir sistem: Windows paneli, sunucu ve Android ajanı. Panel bir istemcidir —
+      iş mantığının tamamı sunucuda ve ajanda çalışır.</p>
+    </div>
+
+    <div class="grid grid-3">
+      <div class="card">
+        <div class="ico" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="4" width="19" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg>
+        </div>
+        <h3>Panel — ERLIK.exe</h3>
+        <p>Windows 10/11 üzerinde çalışan tek EXE. JSON API'yi okur, komut yazar, SSE akışını tüketir.
+        Ağ işi ayrı iş parçacığında; arayüz donmaz.</p>
+      </div>
+      <div class="card">
+        <div class="ico" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="7" rx="2"/><rect x="3" y="14" width="18" height="7" rx="2"/><path d="M7 6.5h.01M7 17.5h.01"/></svg>
+        </div>
+        <h3>Sunucu — erlikd</h3>
+        <p>Go ile yazılmış yönetim servisi. Cihaz envanteri, komut kuyruğu, olay/konum deposu,
+        kimlik doğrulama ve tünel süpervizörü burada.</p>
+      </div>
+      <div class="card">
+        <div class="ico" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="2.5" width="12" height="19" rx="2.5"/><path d="M10.5 18.5h3"/></svg>
+        </div>
+        <h3>Ajan — Android APK</h3>
+        <p>Kotlin tabanlı servis. Kayıt anahtarıyla sunucuya bağlanır, gRPC/mTLS üzerinden komut alır,
+        ekran ve konum akıtır.</p>
+      </div>
+    </div>
+
+    <figure class="diagram">
+      <pre class="mermaid">
+flowchart LR
+    subgraph WS["Windows iş istasyonu"]
+        P["ERLIK.exe<br/>ImGui + D3D11"]
+        D["erlikd<br/>Go admin API"]
+        L["%APPDATA%\\ERLIK<br/>config.ini · logs"]
+        P --- L
+    end
+
+    subgraph NET["Genel ağ"]
+        CF["cloudflared<br/>HTTPS tüneli"]
+    end
+
+    subgraph PH["Android cihaz"]
+        A["Ajan APK<br/>Kotlin servis"]
+    end
+
+    P -- "HTTPS · JSON /api/*" --> D
+    D -- "SSE /api/stream" --> P
+    D -- "gRPC · mTLS" --> A
+    A -- "kayıt + canlı ekran" --> D
+    D --- CF
+    CF --- A
+      </pre>
+      <figcaption>Şekil 1 — Bileşenler ve veri yolları. Panel hiçbir zaman cihazla doğrudan konuşmaz.</figcaption>
+    </figure>
+
+    <div class="note">
+      Panel varsayılan olarak <code>https://127.0.0.1:8445</code> adresine bağlanır. Yani ilk denemede
+      <code>erlikd</code>'nin aynı makinede çalışıyor olması gerekir. Farklı bir sunucuya bağlanacaksan
+      adresi <strong>Bağlantı</strong> ekranından ya da <code>config.ini</code> içinden değiştirirsin.
+    </div>
+  </section>
+
+  <!-- ============ ÖZELLİKLER ============ -->
+  <section id="ozellikler">
+    <div class="section-head">
+      <h2>Özellikler</h2>
+      <p>On dört modül aynı kabuk içinde; her biri kendi ekran dosyasında yaşar.</p>
+    </div>
+
+    <div class="grid grid-3">
+      <div class="card"><h3>Pano</h3><p>Toplam / çevrimiçi / çevrimdışı sayaçları, son konum haritası, son olaylar ve depolama kotası.</p></div>
+      <div class="card"><h3>Cihazlar</h3><p>Carousel ve liste görünümü, ad/grup arama, durum süzgeci, 4 saniyelik otomatik tazeleme.</p></div>
+      <div class="card"><h3>Takip</h3><p>30+ komut tipi için katalog, JSON argüman şablonu, kuyruk ve sonuç geçmişi.</p></div>
+      <div class="card"><h3>Canlı ekran</h3><p>Ajanın JPEG kareleri; çözme işçi iş parçacığında, doku üretimi arayüzde.</p></div>
+      <div class="card"><h3>Kumanda</h3><p>Dokunma, kaydırma, donanım tuşları, metin yazma, UI ağacından öğeye tıklama.</p></div>
+      <div class="card"><h3>Dosya</h3><p>Dizin gezme, indirme/yükleme, silinen dosyaları görme ve kurtarma.</p></div>
+      <div class="card"><h3>Konum</h3><p>GPS noktaları, doğruluk/hız, rota özeti (km, hareket süresi, durak), OpenStreetMap.</p></div>
+      <div class="card"><h3>Geçmiş</h3><p>Olay akışı, sıra numarası, JSON yük görüntüleme.</p></div>
+      <div class="card"><h3>Kopya</h3><p>Tek kullanımlık kayıt anahtarı, panoya kopyalama, dört adımlı kurulum rehberi.</p></div>
+      <div class="card"><h3>Loglar</h3><p>SSE canlı akışı, komut/olay/denetim süzgeçleri, okunur enum adları, CSV dışa aktarma.</p></div>
+      <div class="card"><h3>Yapılandırma</h3><p>Global ve cihaz kapsamlı ajan belgesi, revizyon geçmişi, geri alma, toplu itme.</p></div>
+      <div class="card"><h3>APK üret</h3><p>Binder + ajan birleştirme, etiket/paket/ikon, izin maskeleri, gizleme, QR ile kurulum.</p></div>
+      <div class="card"><h3>Genel erişim</h3><p>cloudflared indirme/kurma, HTTPS tüneli, keşif belgesi yayını.</p></div>
+      <div class="card"><h3>Ayarlar</h3><p>7 dil, 6 hazır vurgu + özel renk, arka plan stilleri, DPI ölçeği, tepsi davranışı.</p></div>
+    </div>
+
+    <h3>Deneyim tarafı</h3>
+    <ul>
+      <li><strong>Komut paleti</strong> (<kbd>Ctrl</kbd>+<kbd>K</kbd>): sayfalar ve cihazlar tek kutuda; ok tuşları + Enter.</li>
+      <li><strong>Bildirim merkezi</strong>: her toast arşivlenir, zil sayacı okunmamışları gösterir.</li>
+      <li><strong>Bağlama duyarlı ESC</strong>: açık katman varsa onu kapatır, yoksa paneli tepsiye indirir.</li>
+      <li><strong>Tek örnek kilidi</strong>: ikinci kopya açılmaz, mevcut pencere öne gelir.</li>
+      <li><strong>Stream proof</strong>: pencere yakalama koruması (<code>WDA_EXCLUDEFROMCAPTURE</code>).</li>
+      <li><strong>DPI farkındalığı</strong>: monitör ölçeği değişince font atlası ve stil yeniden kurulur.</li>
+    </ul>
+  </section>
+
+  <!-- ============ KURULUM ============ -->
+  <section id="kurulum">
+    <div class="section-head">
+      <h2>Kurulum ve çalıştırma</h2>
+      <p>İki yol var: hazır EXE'yi indirmek veya kaynaktan derlemek. İkisi de tek dosya üretir.</p>
+    </div>
+
+    <h3>A. Hazır EXE (önerilen)</h3>
+    <ol class="steps">
+      <li><strong>İndir</strong><p><a href="https://github.com/Memati8383/erlik/releases/latest">Releases</a> sayfasından <code>ERLIK-1.0.0.exe</code> dosyasını al.</p></li>
+      <li><strong>Klasöre çıkar</strong><p>EXE'yi boş bir klasöre koy. Yanına <code>assets\</code> klasörünü de kopyalarsan logo, font ve ikonlar bulunur.</p></li>
+      <li><strong>Çalıştır</strong><p>Çift tıkla. İmzasız olduğu için SmartScreen çıkarsa <em>Ek bilgi → Yine de çalıştır</em>.</p></li>
+      <li><strong>Sunucuyu başlat</strong><p>Panel bir istemcidir; <code>erlikd</code> çalışmıyorsa bağlantı kurulmaz. Sunucu ayrı kurulur (aşağıya bak).</p></li>
+    </ol>
+
+    <h3>B. Kaynaktan derleme</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Gereksinim</th><th>Not</th></tr></thead>
+        <tbody>
+          <tr><td data-label="Gereksinim"><strong>Windows 10 2004+ / Windows 11</strong></td><td data-label="Not">Stream proof için <code>WDA_EXCLUDEFROMCAPTURE</code> gerekir</td></tr>
+          <tr><td data-label="Gereksinim"><strong>Visual Studio 2022</strong> veya <strong>Build Tools 2022</strong></td><td data-label="Not">“Desktop development with C++” iş yükü zorunlu</td></tr>
+          <tr><td data-label="Gereksinim"><strong>Windows SDK</strong></td><td data-label="Not">WinHTTP, WIC, D3D11 başlıkları</td></tr>
+          <tr><td data-label="Gereksinim"><strong>Paket yöneticisi</strong></td><td data-label="Not">Gerekmez — Dear ImGui <code>external/imgui</code> altında gömülü</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <pre><code>build.bat</code></pre>
+
+    <p><code>build.bat</code>, <code>vswhere.exe</code> ile MSVC'yi bulur; Community / Professional / Enterprise /
+    BuildTools ve VS 2019 kurulumlarını sırayla dener. Beklenen çıktı:</p>
+
+    <pre><code>[1/3] derleniyor...
+[2/3] kaynaklar...
+[3/3] baglaniyor...
+[OK] build\ERLIK.exe</code></pre>
+
+    <p>Derleme bayrakları: <code>/std:c++17 /O2 /MT /utf-8 /MP /W3</code>. <code>/MT</code> sayesinde
+    çıktı tek başına çalışır — Visual C++ redistributable kurmak gerekmez.</p>
+
+    <figure class="diagram">
+      <pre class="mermaid">
+flowchart TD
+    A["ERLIK-1.0.0.exe indir<br/>veya build.bat"] --> B{"EXE açıldı mı?"}
+    B -->|hayır| B1["vcvars64.bat / DirectX hatası<br/>→ Sorun giderme"]
+    B -->|evet| C["Lisans ekranı"]
+    C --> D["Sunucu adresi + parola"]
+    D --> E{"erlikd çalışıyor mu?"}
+    E -->|hayır| E1["erlikd -lan<br/>8445 portu"]
+    E1 --> D
+    E -->|evet| F["5 aşama: TLS → sertifika<br/>→ kimlik → cihazlar → hazır"]
+    F --> G["Kabuk açılır"]
+    G --> H["Cihaz kaydı<br/>Kopya → anahtar → APK"]
+    H --> I["İzleme, kumanda, dosya, konum"]
+      </pre>
+      <figcaption>Şekil 2 — Sıfırdan kullanılabilir panele kadar yol.</figcaption>
+    </figure>
+
+    <h3>İlk açılışta ne olur?</h3>
+    <ul>
+      <li><code>%APPDATA%\ERLIK\</code> klasörü oluşturulur: <code>config.ini</code> + <code>logs\</code>.</li>
+      <li>Varsayılan sunucu <code>https://127.0.0.1:8445</code>, varsayılan dil Türkçe, varsayılan tema Mono.</li>
+      <li>Eski sürümden kalan <code>ERLİK.ini</code> varsa bir kez içe aktarılır ve <code>.old</code> olarak yeniden adlandırılır.</li>
+      <li>Geçerli ve hatırlanan bir anahtar varsa lisans ekranı atlanır.</li>
+    </ul>
+
+    <div class="note warn">
+      <strong>assets klasörü:</strong> EXE tek başına çalışır ama logo/font için <code>assets\</code> arar —
+      EXE'nin yanında, bir üst dizinde veya iki üst dizinde. Bulamazsa gömülü yedeklere düşer; yine de
+      klasörü yanında tutmak görsel tutarlılık için daha iyi.
+    </div>
+  </section>
+
+  <!-- ============ BAĞLANTI ============ -->
+  <section id="baglanti">
+    <div class="section-head">
+      <h2>Bağlantı kurma</h2>
+      <p>Panel açılınca önce lisans ekranı, sonra bağlantı ekranı gelir. Sıra şu:</p>
+    </div>
+
+    <ol class="steps">
+      <li><strong>Lisans ekranı</strong>
+        <p>Anahtar <em>yalnızca biçim olarak</em> doğrulanır: boşluk ve tireler temizlenir, en az 16
+        alfanümerik karakter aranır. Denemek için <em>Demo key</em> düğmesi kutuyu doldurur.</p>
+      </li>
+      <li><strong>Sunucu adresi</strong>
+        <p>Bağlantı ekranındaki alan varsayılan olarak <code>https://127.0.0.1:8445</code>. Uzak sunucu için
+        <code>https://sunucu:8445</code>, LAN için <code>https://192.168.x.x:8445</code> yaz.</p>
+      </li>
+      <li><strong>Parola</strong>
+        <p>Sunucu loopback dışından erişilecekse panel parolası gerekir. Parola sunucunun veri dizinindeki
+        <code>admin.pass</code> dosyasında durur (ilk çalıştırmada rastgele üretilip bir kez yazdırılır).</p>
+      </li>
+      <li><strong>Beş aşama</strong>
+        <p><em>TLS el sıkışması → sertifika doğrulama → kimlik doğrulama → cihazlar → hazır.</em>
+        Hepsi yeşile dönerse kabuk açılır.</p>
+      </li>
+      <li><strong>Cihaz kaydı</strong>
+        <p>Cihazlar sayfasından bir cihaz seçilir; yeni cihaz için <em>Kopya</em> sekmesinden tek kullanımlık
+        anahtar alınır ve ajana girilir (veya APK üretilip QR ile kurulur).</p>
+      </li>
+    </ol>
+
+    <figure class="shot">
+      <img loading="lazy" decoding="async" width="1060" height="660" src="assets/shots/20-connect.png" alt="Bağlantı ekranı: beş aşama">
+      <figcaption>Bağlantı ekranı — beş aşama. Sunucuya ulaşılamazsa altta “Sunucu kapalı görünüyor. erlikd çalışıyor mu?” ipucu çıkar.</figcaption>
+    </figure>
+
+    <figure class="shot">
+      <img loading="lazy" decoding="async" width="1060" height="660" src="assets/shots/18-login.png" alt="Lisans ekranı">
+      <figcaption>Lisans ekranı — anahtar, “Beni hatırla”, dil seçimi. Anahtar DPAPI ile şifrelenip saklanır.</figcaption>
+    </figure>
+
+    <h3>Sunucu tarafı: erlikd</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Port</th><th>Ne için</th></tr></thead>
+        <tbody>
+          <tr><td data-label="Port"><code>8445</code></td><td data-label="Ne için">Admin panel API'si (HTTPS) — panelin konuştuğu port</td></tr>
+          <tr><td data-label="Port"><code>8444</code></td><td data-label="Ne için">Kayıt (enrollment), tek kullanımlık anahtar</td></tr>
+          <tr><td data-label="Port"><code>8443</code></td><td data-label="Ne için">Veri düzlemi (mTLS gRPC)</td></tr>
+          <tr><td data-label="Port"><code>8446</code></td><td data-label="Ne için">Eski “pull” kanalı (mTLS HTTP)</td></tr>
+          <tr><td data-label="Port"><code>8447</code></td><td data-label="Ne için">Tünel dinleyicisi (loopback)</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <pre><code>erlikd -lan            # LAN'daki telefonlar erişebilsin
+erlikd -panel-open     # yalnız loopback'te giriş ekranını atla (kimlik doğrulamayı atlamaz)</code></pre>
+
+    <div class="note">
+      <strong>Loopback kuralı:</strong> aynı makinede çalışırken <code>-panel-open</code> giriş ekranını atlar;
+      parola yine de sunucuda doğrulanır. Uzak bağlantıda her durumda parola gerekir.
+    </div>
+
+    <figure class="shot">
+      <img loading="lazy" decoding="async" width="1060" height="660" src="assets/shots/19-connect.png" alt="Başarılı yeniden bağlanma bildirimi">
+      <figcaption>Bağlantı oturumu hatırlanır: sonraki açılışta “Tekrar hoş geldin” bildirimiyle doğrudan panoya düşer.</figcaption>
+    </figure>
+
+    <figure class="diagram">
+      <pre class="mermaid">
+sequenceDiagram
+    autonumber
+    actor U as Operatör
+    participant P as ERLIK.exe
+    participant D as erlikd
+    participant A as Ajan APK
+
+    U->>P: Lisans anahtarı
+    P->>P: Biçim doğrulama (16+ karakter)
+    P->>D: POST /api/login { password }
+    D-->>P: erlik_session + erlik_csrf
+    P->>D: GET /api/whoami
+    D-->>P: { authenticated }
+    P->>D: GET /api/devices
+    D-->>P: device[]
+
+    A->>D: Kayıt anahtarı ile enroll
+    D-->>A: veri düzlemi adresi
+    A->>D: gRPC stream (mTLS)
+    D-->>P: SSE /api/stream — event: log
+    P->>D: GET /api/devices/{id}/commands
+      </pre>
+      <figcaption>Şekil 3 — Oturum açma ve ajan kaydı. Panel ile ajan birbirini hiç görmez.</figcaption>
+    </figure>
+  </section>
+
+  <!-- ============ KULLANIM ============ -->
+  <section id="kullanim">
+    <div class="section-head">
+      <h2>Kullanım — ekran ekran</h2>
+      <p>Sol sütun sabit gezinme; sayfalar arasında <kbd>Ctrl</kbd>+<kbd>K</kbd> paleti veya
+      <kbd>Ctrl</kbd>+<kbd>1</kbd>…<kbd>8</kbd> ile geçebilirsin.</p>
+    </div>
+
+    <h3 id="pano">Pano</h3>
+    <p>Girişten sonra açılan ekran. Üstte dört sayaç (toplam, çevrimiçi, çevrimdışı, iptal edilen),
+    solda son konum haritası, sağda son olaylar akışı.</p>
+    <ul>
+      <li>Harita, seçili cihazın son düzeltmelerini gösterir; veri yoksa sessiz bir çerçeve ve “Konum verisi yok” yazar.</li>
+      <li>Sayaçlar sunucudaki envanterden gelir; iptal edilen cihazlar ayrı sayılır.</li>
+      <li>Kota göstergesi depolama doluluğunu gösterir — panel <em>uyarır</em>, asla veri silmez.</li>
+    </ul>
+    <figure class="shot">
+      <img loading="lazy" decoding="async" width="1060" height="660" src="assets/shots/02-dashboard.png" alt="Pano">
+      <figcaption>Pano — sayaçlar, konum haritası ve son olaylar.</figcaption>
+    </figure>
+
+    <h3 id="cihazlar">Cihazlar</h3>
+    <p>Carousel ve liste görünümü aynı veriyi gösterir. Arama ad ve gruba bakar; durum süzgeci
+    (Tümü / Çevrimiçi / Çevrimdışı / İptal) üstteki sekmelerde. Liste 4 saniyede bir kendini tazeler,
+    <kbd>F5</kbd> elle tazeleme yapar.</p>
+    <ul>
+      <li>Çevrimiçi cihazlar önce gelir; “Son görülme” alanı ne kadar önce görüldüğünü yazar.</li>
+      <li>Bir karta tıklamak cihaz detayını açar — sekmeler o cihaza bağlıdır.</li>
+      <li>İptal edilen cihaz geri dönmez; kaydı geçmişte kalır.</li>
+    </ul>
+    <figure class="shot">
+      <img loading="lazy" decoding="async" width="1060" height="660" src="assets/shots/01-devices.png" alt="Cihazlar">
+      <figcaption>Cihazlar — carousel görünümü, durum rozetleri ve son görülme.</figcaption>
+    </figure>
+
+    <h3 id="detay">Cihaz detayı</h3>
+    <p>Seçilen cihaz için yedi sekme: <strong>Takip, Canlı ekran, Kumanda, Dosya, Konum, Geçmiş, Kopya</strong>.
+    Sağ üstte <em>APK güncelle</em> ve <em>İptal et</em> düğmeleri durur.</p>
+
+    <h4>Takip — komut gönderme</h4>
+    <p>Komut tipi açılır listeden seçilir, argümanlar JSON olarak yazılır, <em>Gönder</em> ile kuyruğa girer.
+    Sağdaki geçmiş, komutun durumunu sunucunun söylediği gibi gösterir:
+    <code>queued → finished / failed</code>. Panel kendi durum makinesini uydurmaz.</p>
+    <figure class="shot">
+      <img loading="lazy" decoding="async" width="1060" height="660" src="assets/shots/03-device-detail.png" alt="Takip sekmesi">
+      <figcaption>Takip — PING komutu gönderilmiş, sağda komut geçmişi ve sonuçları.</figcaption>
+    </figure>
+
+    <h4>Canlı ekran</h4>
+    <p>Ajanın gönderdiği JPEG kareleri gösterilir. Çözme işçi iş parçacığında yapılır, dokuya yalnız yeni kare
+    yüklenir; bu yüzden akış sırasında arayüz donmaz.</p>
+    <figure class="shot">
+      <img loading="lazy" decoding="async" width="1060" height="660" src="assets/shots/04-live-screen.png" alt="Canlı ekran">
+      <figcaption>Canlı ekran — ajan kareleri, akış durumu göstergesi.</figcaption>
+    </figure>
+
+    <h4>Kumanda</h4>
+    <p>Ekran görüntüsü al, koordinata dokun, kaydır, donanım tuşlarına bas, metin yaz, UI ağacını çek ve
+    metne göre tıkla. Cihaz yöneticisi eylemleri (kilit, parola, kamera) de burada.</p>
+    <figure class="shot">
+      <img loading="lazy" decoding="async" width="1060" height="660" src="assets/shots/05-remote.png" alt="Kumanda">
+      <figcaption>Kumanda — dokunma koordinatları, kaydırma, tuşlar ve metin girişi.</figcaption>
+    </figure>
+
+    <h4>Dosya</h4>
+    <p>Dizin gezme, dosya indirme (blob) ve cihaza yükleme. Silinen dosyalar işaretli kalır;
+    <code>FILE_RESTORE</code> ile geri alınabilir, <code>FILE_PURGE</code> kalıcı siler.</p>
+    <figure class="shot">
+      <img loading="lazy" decoding="async" width="1060" height="660" src="assets/shots/06-files.png" alt="Dosya gezgini">
+      <figcaption>Dosya — uzak dizin listesi, boyut ve tarih sütunları.</figcaption>
+    </figure>
+
+    <h4>Konum</h4>
+    <p>GPS noktaları OpenStreetMap üzerinde; sağda enlem/boylam, doğruluk, hız, sağlayıcı, son görülme,
+    düzeltme sayısı ve rota özeti (toplam mesafe, hareket süresi, durak sayısı).</p>
+    <figure class="shot">
+      <img loading="lazy" decoding="async" width="1060" height="660" src="assets/shots/07-location.png" alt="Konum">
+      <figcaption>Konum — harita ve rota özeti paneli.</figcaption>
+    </figure>
+
+    <h4>Geçmiş</h4>
+    <p>Cihazdan gelen olaylar: bildirimler, servis durumları, komut sonuçları. Her satırda sıra numarası ve
+    JSON yükü görünür. Sütunlar sunucudan geldiği gibi gösterilir.</p>
+    <figure class="shot">
+      <img loading="lazy" decoding="async" width="1060" height="660" src="assets/shots/08-history.png" alt="Olay geçmişi">
+      <figcaption>Geçmiş — olay akışı ve yük ayrıntısı.</figcaption>
+    </figure>
+
+    <h4>Kopya — kayıt anahtarı</h4>
+    <p>Yeni cihaz eklemek için tek kullanımlık anahtar üretilir, panoya kopyalanır ve dört adımlı rehberle
+    ajana girilir. Anahtar sunucuda tek kullanımlıktır; yeniden kullanılamaz.</p>
+    <figure class="shot">
+      <img loading="lazy" decoding="async" width="1060" height="660" src="assets/shots/09-clone.png" alt="Kopya sekmesi">
+      <figcaption>Kopya — anahtar üretimi ve kurulum adımları.</figcaption>
+    </figure>
+
+    <h3 id="yapilandirma">Yapılandırma</h3>
+    <p>Ajanın <code>config v2</code> belgesi: ekran FPS/kalite, mikrofon, konum aralığı, bildirimler,
+    dosya erişimi, heartbeat; kimlik (simge gizleme, sessiz bildirim) ve özellik anahtarları.
+    Belge panelde salt okunur görünür — kaydetme, itme ve geri alma sunucu üzerinden yürür.</p>
+    <ul>
+      <li>Global belge tüm cihazlara temel olur; cihaz kapsamlı belge onu ezer.</li>
+      <li>Revizyon geçmişi tutulur; tek tıkla eski revizyona dönülür.</li>
+      <li>Değişiklik cihaza <code>CONFIG_APPLY</code> komutuyla iner.</li>
+    </ul>
+    <figure class="shot">
+      <img loading="lazy" decoding="async" width="1060" height="660" src="assets/shots/10-config.png" alt="Yapılandırma">
+      <figcaption>Yapılandırma — global belge ve revizyon listesi.</figcaption>
+    </figure>
+
+    <h3 id="loglar">Loglar</h3>
+    <p>Sunucunun SSE akışı üç kaynağı karıştırır: <code>command</code>, <code>event</code>, <code>audit</code>.
+    Süzgeçler bunları ayırır; proto enum adları okunur metne çevrilir (“COMMAND_TYPE_PING” → “ping”).
+    Görünen her şey CSV olarak dışa aktarılabilir.</p>
+    <figure class="shot">
+      <img loading="lazy" decoding="async" width="1060" height="660" src="assets/shots/11-logs.png" alt="Loglar">
+      <figcaption>Loglar — canlı akış, süzgeçler ve dışa aktarma.</figcaption>
+    </figure>
+
+    <h3 id="apk">APK üretimi</h3>
+    <p>Panel, binder ile ajan APK'sını birleştirip imzalı bir paket üretir. Dört aşama:
+    <strong>hazırla → yamala (manifest + smali) → imzala (apksigner) → yaz</strong>. Çıktı
+    <code>build/ERLIK-*.apk</code> olarak düşer.</p>
+    <ol class="steps">
+      <li><strong>Binder seç</strong><p><code>erlikbinder.exe</code> yolu.</p></li>
+      <li><strong>Ajan APK seç</strong><p>Yamalanacak temel APK.</p></li>
+      <li><strong>Kimlik</strong><p>Etiket, paket adı, ikon; sunucu adresi + port ve CA sertifikası.</p></li>
+      <li><strong>Maske ve gizleme</strong><p>İzin maskesi, özellik maskesi; başlatıcı simgesini gizle, sessiz bildirim, kaldırma engeli.</p></li>
+      <li><strong>Derle ve kur</strong><p><em>Derle</em> → <em>Kur + izin</em> (ADB) veya QR ile telefonda aç.</p></li>
+    </ol>
+    <figure class="shot">
+      <img loading="lazy" decoding="async" width="1060" height="660" src="assets/shots/12-apk.png" alt="APK üretimi">
+      <figcaption>APK üretimi — binder, ajan, kimlik, izin/özellik maskeleri ve gizleme katmanları.</figcaption>
+    </figure>
+    <figure class="diagram">
+      <pre class="mermaid">
+flowchart TD
+    B["Binder seç<br/>erlikbinder.exe"] --> G["Ajan APK seç"]
+    G --> M["Etiket · paket · ikon"]
+    M --> S["Sunucu adresi + CA"]
+    S --> P["İzin maskesi + özellik maskesi"]
+    P --> H["Gizleme katmanları"]
+    H --> C{"Derle"}
+    C --> C1["1. hazırla: geçici dizin"]
+    C1 --> C2["2. yamala: manifest + smali"]
+    C2 --> C3["3. imzala: apksigner"]
+    C3 --> C4["4. yaz: build/ERLIK-*.apk"]
+    C4 --> QR["QR / Kur + izin / ADB"]
+      </pre>
+      <figcaption>Şekil 4 — APK üretim hattı.</figcaption>
+    </figure>
+
+    <h3 id="tunel">Genel erişim (tünel)</h3>
+    <p>Telefon farklı bir ağdaysa panelin portunu internete açmak yerine cloudflared tüneli kullanılır.
+    <em>İndir ve kur</em> cloudflared ikilisini getirir; tünel açıldığında
+    <code>https://*.trycloudflare.com</code> adresi üretilir ve ajanın keşif belgesi yayınlanır.</p>
+    <ul>
+      <li>Tünel adresi her açılışta değişebilir — ajana yeni adresi iletmen gerekir.</li>
+      <li>Adres eskimişse <em>Yenile</em>; cloudflared süreci düştüyse yeniden kur.</li>
+      <li>Tünel kapalıyken panel yalnız LAN/loopback üzerinden erişilebilir.</li>
+    </ul>
+    <figure class="shot">
+      <img loading="lazy" decoding="async" width="1060" height="660" src="assets/shots/13-tunnel.png" alt="Genel erişim">
+      <figcaption>Genel erişim — tünel durumu, genel adres ve keşif belgesi.</figcaption>
+    </figure>
+    <figure class="diagram">
+      <pre class="mermaid">
+flowchart LR
+    O["Operatör: tünel açık"] --> D["erlikd süpervizör"]
+    D --> C["cloudflared süreci"]
+    C --> U["https://*.trycloudflare.com"]
+    D --> J["keşif belgesi (JSON)"]
+    J --> R["Codeberg deposu"]
+    U --> A["Ajan"]
+    R --> A
+    D -.->|"durum yoklanır"| P["Panel /api/tunnel"]
+      </pre>
+      <figcaption>Şekil 5 — Tünel ve keşif belgesi.</figcaption>
+    </figure>
+
+    <h3 id="ayarlar">Ayarlar</h3>
+    <p>Dil (7 dil), vurgu rengi (6 hazır + özel), arka plan stili (Aurora, Waves, Warp, Grid, sabit),
+    parçacık/cam/animasyon yoğunluğu, DPI ölçeği, tepsi davranışı, “üstte tut” ve stream proof.</p>
+    <figure class="shot">
+      <img loading="lazy" decoding="async" width="1060" height="660" src="assets/shots/14-settings.png" alt="Ayarlar">
+      <figcaption>Ayarlar — görünüm, dil ve davranış seçenekleri.</figcaption>
+    </figure>
+
+    <h3 id="hakkinda">Hakkında, palet ve bildirimler</h3>
+    <p><em>Hakkında</em> sürüm, derleme zamanı ve lisans bilgisini gösterir. <kbd>Ctrl</kbd>+<kbd>K</kbd>
+    paleti sayfa ve cihaz arar; zil simgesi bildirim merkezini açar ve okunmamışları sayar.</p>
+    <div class="grid grid-2">
+      <figure class="shot" style="margin:0">
+        <img loading="lazy" decoding="async" width="1060" height="660" src="assets/shots/15-about.png" alt="Hakkında">
+        <figcaption>Hakkında — sürüm ve derleme bilgisi.</figcaption>
+      </figure>
+      <figure class="shot" style="margin:0">
+        <img loading="lazy" decoding="async" width="1060" height="660" src="assets/shots/17-command-palette.png" alt="Komut paleti">
+        <figcaption>Komut paleti — Ctrl+K ile sayfa/cihaz arama.</figcaption>
+      </figure>
+    </div>
+    <figure class="shot">
+      <img loading="lazy" decoding="async" width="1060" height="660" src="assets/shots/16-notifications.png" alt="Bildirim merkezi">
+      <figcaption>Bildirim merkezi — toast arşivi ve komut sonuçları.</figcaption>
+    </figure>
+
+    <h3>Klavye kısayolları</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Kısayol</th><th>İşlev</th></tr></thead>
+        <tbody>
+          <tr><td data-label="Kısayol"><kbd>Ctrl</kbd>+<kbd>K</kbd></td><td data-label="İşlev">Komut paleti (sayfa + cihaz arama)</td></tr>
+          <tr><td data-label="Kısayol"><kbd>Ctrl</kbd>+<kbd>1</kbd>…<kbd>8</kbd></td><td data-label="İşlev">Pano · Cihazlar · Yapılandırma · Loglar · APK Üret · Genel Erişim · Ayarlar · Hakkında</td></tr>
+          <tr><td data-label="Kısayol"><kbd>F5</kbd></td><td data-label="İşlev">Cihaz listesini elle tazele</td></tr>
+          <tr><td data-label="Kısayol"><kbd>Esc</kbd></td><td data-label="İşlev">Açık katmanı kapat; katman yoksa tepsiye in</td></tr>
+          <tr><td data-label="Kısayol"><kbd>F12</kbd></td><td data-label="İşlev">ImGui debug overlay</td></tr>
+          <tr><td data-label="Kısayol"><kbd>↑</kbd> <kbd>↓</kbd> <kbd>Enter</kbd></td><td data-label="İşlev">Palet içinde gezinme ve seçim</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ============ KOMUTLAR ============ -->
+  <section id="komutlar">
+    <div class="section-head">
+      <h2>Komut kataloğu</h2>
+      <p>Takip sekmesindeki tipler ajanın <code>CommandHandlers</code> dosyasıyla birebirdir.
+      <code>{}</code> varsayılan argüman şablonudur.</p>
+    </div>
+
+    <div class="cmd-grid">
+      <div class="cmd"><b>PING</b><span>{}</span></div>
+      <div class="cmd"><b>SCREEN_START / STOP</b><span>{}</span></div>
+      <div class="cmd"><b>MIC_START / STOP</b><span>{}</span></div>
+      <div class="cmd"><b>LOCATION_FLUSH</b><span>{}</span></div>
+      <div class="cmd"><b>CLIPBOARD_READ</b><span>{}</span></div>
+      <div class="cmd"><b>CLIPBOARD_WRITE</b><span>{"text":""}</span></div>
+      <div class="cmd"><b>FILE_LIST</b><span>{"path":"/sdcard"}</span></div>
+      <div class="cmd"><b>FILE_READ / WRITE / DELETE</b><span>{"path":"/sdcard/"}</span></div>
+      <div class="cmd"><b>FILE_RENAME</b><span>{"path":"…","new_path":"…"}</span></div>
+      <div class="cmd"><b>FILE_RESTORE / PURGE</b><span>{"path":"/sdcard/"}</span></div>
+      <div class="cmd"><b>CONFIG_GET</b><span>{}</span></div>
+      <div class="cmd"><b>CONFIG_APPLY</b><span>{"config_json":{}}</span></div>
+      <div class="cmd"><b>SELF_UPDATE</b><span>{"path":""}</span></div>
+      <div class="cmd"><b>APP_DATA_WIPE</b><span>{"confirm":true}</span></div>
+      <div class="cmd"><b>SCREENSHOT</b><span>{"quality":85}</span></div>
+      <div class="cmd"><b>INPUT_TAP</b><span>{"x":540,"y":1200}</span></div>
+      <div class="cmd"><b>INPUT_SWIPE</b><span>{"x1":…,"y1":…,"x2":…,"y2":…,"ms":300}</span></div>
+      <div class="cmd"><b>INPUT_KEY</b><span>{"key":"back"}</span></div>
+      <div class="cmd"><b>UI_TREE</b><span>{"filter":""}</span></div>
+      <div class="cmd"><b>UI_CLICK</b><span>{"text":""}</span></div>
+      <div class="cmd"><b>UI_SET_TEXT</b><span>{"text":""}</span></div>
+      <div class="cmd"><b>DEVICE_LOCK</b><span>{}</span></div>
+      <div class="cmd"><b>DEVICE_SET_PASSWORD</b><span>{"password":""}</span></div>
+      <div class="cmd"><b>DEVICE_WIPE</b><span>{"confirm":true}</span></div>
+      <div class="cmd"><b>CAMERA_DISABLE</b><span>{"disabled":true}</span></div>
+      <div class="cmd"><b>APP_UNINSTALL</b><span>{"package_name":""}</span></div>
+    </div>
+
+    <figure class="diagram">
+      <pre class="mermaid">
+flowchart LR
+    U["Operatör<br/>Takip / Kumanda"] --> Q["Enqueue()"]
+    Q --> API["POST /api/devices/{id}/commands"]
+    API --> K["erlikd kuyruğu"]
+    K --> G["gRPC → ajan"]
+    G --> R["sonuç / hata"]
+    R --> V["GET /api/devices/{id}/commands"]
+    V --> UI["komut geçmişi<br/>queued → finished / failed"]
+      </pre>
+      <figcaption>Şekil 6 — Komut yolu. Durum adları sunucudan gelir, panel yorumlamaz.</figcaption>
+    </figure>
+
+    <div class="note danger">
+      <strong>Yıkıcı komutlar:</strong> <code>DEVICE_WIPE</code>, <code>APP_DATA_WIPE</code> ve cihaz iptali
+      çift onay ister. “İptal et” kalıcıdır — cihaz kaydı geri alınamaz.
+    </div>
+  </section>
+
+  <!-- ============ SORUN GİDERME ============ -->
+  <section id="sorun">
+    <div class="section-head">
+      <h2>Sorun giderme</h2>
+      <p>Önce belirtiyi bul; tablo nedeni ve çözümü verir. Hiçbiri tutmuyorsa günlüklere bak (en altta).</p>
+    </div>
+
+    <h3>Derleme</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Belirti</th><th>Neden</th><th>Çözüm</th></tr></thead>
+        <tbody>
+          <tr><td data-label="Belirti"><code>vcvars64.bat bulunamadi</code></td><td data-label="Neden">MSVC C++ iş yükü kurulu değil</td><td data-label="Çözüm">Visual Studio Installer → <em>Desktop development with C++</em> iş yükünü ekle</td></tr>
+          <tr><td data-label="Belirti">Derleme yarıda kalıyor, kaynak bulunamıyor</td><td data-label="Neden">SDK eksik</td><td data-label="Çözüm">Windows 10/11 SDK'yı kur; ardından <code>build.bat</code>'ı yeniden çalıştır</td></tr>
+          <tr><td data-label="Belirti">Bağlama (link) hataları</td><td data-label="Neden">Eksik kütüphane listesi</td><td data-label="Çözüm"><code>build.bat</code>'ı değiştirmediysen yeniden çek; elle derliyorsan <code>d3d11 dxgi d3dcompiler dwmapi winhttp crypt32</code> ekle</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Açılış ve arayüz</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Belirti</th><th>Neden</th><th>Çözüm</th></tr></thead>
+        <tbody>
+          <tr><td data-label="Belirti"><code>DirectX 11 başlatılamadı</code></td><td data-label="Neden">Sürücü sorunu veya uzak masaüstü oturumu</td><td data-label="Çözüm">WARP yedeği devreye girer; ekran kartı sürücüsünü güncelle, RDP yerine yerel oturum dene</td></tr>
+          <tr><td data-label="Belirti">Pencere açılışta siyah / hiç görünmüyor</td><td data-label="Neden">Tepside kalmış ikinci örnek</td><td data-label="Çözüm">Tek örnek kilidi mevcut pencereyi öne getirir; tepsi simgesine tıkla, fazladan <code>ERLIK.exe</code> kopyasını kapat</td></tr>
+          <tr><td data-label="Belirti">Logo/font yok, arayüz çıplak</td><td data-label="Neden"><code>assets\</code> klasörü bulunamadı</td><td data-label="Çözüm">Klasörü EXE'nin yanına kopyala (bir veya iki üst dizin de kabul edilir)</td></tr>
+          <tr><td data-label="Belirti">Yazılar bulanık</td><td data-label="Neden">DPI ölçeği</td><td data-label="Çözüm">Ayarlar → arayüz ölçeği; 0 = sistem DPI'ı</td></tr>
+          <tr><td data-label="Belirti">ESC'ye basınca panel kayboluyor</td><td data-label="Neden"><code>hide_on_close=1</code></td><td data-label="Çözüm">Tepsi simgesinden geri aç; davranışı Ayarlar'dan kapat</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Bağlantı</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Belirti</th><th>Neden</th><th>Çözüm</th></tr></thead>
+        <tbody>
+          <tr><td data-label="Belirti">“Sunucu kapalı görünüyor. erlikd çalışıyor mu?”</td><td data-label="Neden">Sunucu kapalı, yanlış port veya yanlış adres</td><td data-label="Çözüm"><code>erlikd</code>'yi başlat; adresin <code>https://…:8445</code> olduğunu doğrula</td></tr>
+          <tr><td data-label="Belirti">LAN'daki telefondan sunucuya ulaşılamıyor</td><td data-label="Neden">Sunucu yalnız loopback'te dinliyor</td><td data-label="Çözüm"><code>erlikd -lan</code> ile başlat; Windows güvenlik duvarında 8443–8447 aralığını aç</td></tr>
+          <tr><td data-label="Belirti">Parola reddediliyor</td><td data-label="Neden">Yanlış parola veya loopback dışı erişim</td><td data-label="Çözüm">Sunucu veri dizinindeki <code>admin.pass</code> dosyasına bak; uzak erişimde parola zorunlu</td></tr>
+          <tr><td data-label="Belirti">Bağlantı bir aşamada takılıyor</td><td data-label="Neden">Sertifika pini değişti</td><td data-label="Çözüm">Panel “CA yenilendi” bildirimi verir, yeni iz yazılır; eski davranış için <code>ERLIK_CA_PIN_STRICT=1</code></td></tr>
+          <tr><td data-label="Belirti">Sistem saati hatası / TLS başarısız</td><td data-label="Neden">Saat kayması</td><td data-label="Çözüm">Windows saatini eşitle; sertifika geçerlilik aralığı saate bağlı</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Cihazlar</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Belirti</th><th>Neden</th><th>Çözüm</th></tr></thead>
+        <tbody>
+          <tr><td data-label="Belirti">Cihaz “çevrimdışı” ama telefonda açık</td><td data-label="Neden">Keepalive politikası</td><td data-label="Çözüm">Sunucuda <code>MinTime: 20s</code>, <code>PermitWithoutStream: true</code></td></tr>
+          <tr><td data-label="Belirti">Kayıttan sonra erişilemeyen adres</td><td data-label="Neden">VPN / Hyper-V gibi çoklu ağ arabirimi</td><td data-label="Çözüm">Sunucu veri düzlemi adresini ajanın <code>Host</code> başlığından çözer; sanal adaptörü geçici kapat</td></tr>
+          <tr><td data-label="Belirti">Kayıt anahtarı “kullanılmış” diyor</td><td data-label="Neden">Anahtar tek kullanımlık</td><td data-label="Çözüm">Kopya sekmesinden yeni anahtar üret</td></tr>
+          <tr><td data-label="Belirti">Cihaz listede yok</td><td data-label="Neden">Süzgeç veya arama</td><td data-label="Çözüm">Süzgeci <em>Tümü</em> yap, aramayı temizle, <kbd>F5</kbd></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Canlı ekran, dosya ve APK</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Belirti</th><th>Neden</th><th>Çözüm</th></tr></thead>
+        <tbody>
+          <tr><td data-label="Belirti">Canlı ekran siyah / kare gelmiyor</td><td data-label="Neden">Ekran yakalama izni yok veya akış kapalı</td><td data-label="Çözüm">APK üretiminde “Ekran yakalama” özelliğini işaretle; <code>SCREEN_START</code> gönder</td></tr>
+          <tr><td data-label="Belirti">Dosya listesi boş</td><td data-label="Neden">Depolama izni</td><td data-label="Çözüm">İzin maskesini kontrol et, <code>Kur + izin</code> veya <code>tools\izin-ver.ps1</code></td></tr>
+          <tr><td data-label="Belirti">APK kurulumunda izin reddi</td><td data-label="Neden">MIUI/HyperOS tek dokunuşla izin vermez</td><td data-label="Çözüm">Panelde <em>Kur + izin</em>; olmazsa ADB ile <code>tools\izin-ver.ps1</code></td></tr>
+          <tr><td data-label="Belirti">Derleme hatası: binder bulunamadı</td><td data-label="Neden">Yanlış <code>erlikbinder.exe</code> yolu</td><td data-label="Çözüm">Dosyayı seç; çıktı <code>build\</code> altına yazılır</td></tr>
+          <tr><td data-label="Belirti">Üretilen APK telefonda açılmıyor</td><td data-label="Neden">Paket adı çakışması / imza</td><td data-label="Çözüm">Paket adını değiştir, yeniden derle</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Tünel ve günlükler</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Belirti</th><th>Neden</th><th>Çözüm</th></tr></thead>
+        <tbody>
+          <tr><td data-label="Belirti">Tünel adresi eski</td><td data-label="Neden">cloudflared süreci düşmüş</td><td data-label="Çözüm">Genel Erişim → <em>Yenile</em>; gerekirse <em>İndir ve kur</em></td></tr>
+          <tr><td data-label="Belirti">Tünel var ama ajan bağlanmıyor</td><td data-label="Neden">Keşif belgesi eski adresi gösteriyor</td><td data-label="Çözüm">Yeni adresi ajana ilet veya belgeyi yeniden yayınla</td></tr>
+          <tr><td data-label="Belirti">Loglar > Canlı boş</td><td data-label="Neden">SSE alanlarında boşluk kırpılmamış</td><td data-label="Çözüm">Sunucu sürümünü panelle eşleştir (ayrıştırma düzeltildi)</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Günlükler ve tanılama</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Yol</th><th>İçerik</th></tr></thead>
+        <tbody>
+          <tr><td data-label="Yol"><code>%APPDATA%\ERLIK\logs\panel.log</code></td><td data-label="İçerik">Zaman damgalı INFO / WARN / ERROR satırları</td></tr>
+          <tr><td data-label="Yol"><code>panel.1.log</code>, <code>panel.2.log</code></td><td data-label="İçerik">2 MB'a ulaşınca döndürülen önceki dosyalar</td></tr>
+          <tr><td data-label="Yol"><code>logs\crash-*.txt</code></td><td data-label="İçerik">İstisna kodu, adres ve son 200 günlük satırı</td></tr>
+          <tr><td data-label="Yol"><code>%LOCALAPPDATA%\erlik-menu\ca.sha1</code></td><td data-label="İçerik">TOFU CA parmak izi (yenilenince <code>.old</code> olarak saklanır)</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="note">
+      Panel hiçbir gizli anahtarı günlüğe yazmaz; komut satırı ve argümanlar yalnızca komut geçmişinde görünür.
+      <kbd>F12</kbd> ImGui debug overlay'ini açar.
+    </div>
+  </section>
+
+  <!-- ============ SSS ============ -->
+  <section id="sss">
+    <div class="section-head">
+      <h2>Sık sorulan sorular</h2>
+    </div>
+
+    <details><summary>Sunucu şart mı, panel tek başına çalışmaz mı?</summary>
+      <p>Panel bir istemcidir: envanter, komut kuyruğu ve canlı akış <code>erlikd</code>'den gelir.
+      Sunucu yoksa yalnız arayüz açılır, veri gelmez. Sunucu aynı makinede veya LAN'daki bir makinede çalışabilir.</p>
+    </details>
+
+    <details><summary>Telefonla aynı Wi-Fi'da olmak zorunda mıyım?</summary>
+      <p>Hayır. Aynı ağdaysan <code>erlikd -lan</code> yeterli. Farklı ağdaysan Genel Erişim tünelini açıp
+      ajana tünel adresini verirsin.</p>
+    </details>
+
+    <details><summary>Lisans anahtarı gerçekten doğrulanıyor mu?</summary>
+      <p>Panel yalnızca biçimi denetler (16+ alfanümerik karakter). Gerçek kimlik doğrulama sunucu parolasıdır.
+      Anahtar, Windows DPAPI ile şifrelenip <code>config.ini</code> içinde saklanır.</p>
+    </details>
+
+    <details><summary>“Demo key” ne yapıyor?</summary>
+      <p>Lisans alanını örnek bir anahtarla doldurur; biçim denetimini geçmen için. Sunucu tarafında bir yetki vermez.</p>
+    </details>
+
+    <details><summary>EXE imzasız — Windows uyarı veriyor, sorun olur mu?</summary>
+      <p>Kod imzalama sertifikası olmadığı için SmartScreen uyarır. Dosyayı kendi derlemen veya release'ten
+      indirdiysen <em>Ek bilgi → Yine de çalıştır</em> ile devam edebilirsin.</p>
+    </details>
+
+    <details><summary>Veriler nerede tutuluyor?</summary>
+      <p>Panel tarafında <code>%APPDATA%\ERLIK\config.ini</code> ve günlükler; cihaz/komut/olay/konum verisi
+      sunucunun veri dizinindeki SQLite tabanında. Panel kendi başına veri saklamaz.</p>
+    </details>
+
+    <details><summary>Hangi Android sürümleri destekleniyor?</summary>
+      <p>Ajan ayrı bir depoda geliştiriliyor; sürüm gereksinimleri oradaki belgede tanımlı. Panel tarafı
+      Android sürümünden bağımsızdır — sunucunun gördüğü cihaz kaydıyla çalışır.</p>
+    </details>
+
+    <details><summary>İkinci kez açınca pencere gelmiyor</summary>
+      <p>Tek örnek kilidi devrede: ikinci kopya açılmaz, mevcut pencere öne getirilir. Pencere tepsideyse
+      tepsi simgesine tıkla. Görev yöneticisinde artık <code>ERLIK.exe</code> süreci kalmadığından emin ol.</p>
+    </details>
+
+    <details><summary>Dil değiştirince yeniden başlatmam gerekiyor mu?</summary>
+      <p>Hayır. Dil Ayarlar sayfasından anında değişir; tüm dizeler tek tabloda tutulur, eksik çeviri yoktur.</p>
+    </details>
+
+    <details><summary>Kendi APK'mı üretmeden cihaz ekleyebilir miyim?</summary>
+      <p>Evet. Ajan zaten kuruluysa <em>Kopya</em> sekmesinden tek kullanımlık anahtar üretip ajana girmen yeterli.
+      APK üretimi, ajanı yeniden paketlemek/özelleştirmek istediğinde gerekir.</p>
+    </details>
+  </section>
+
+  <!-- ============ LİSANS ============ -->
+  <section id="lisans">
+    <div class="section-head">
+      <h2>Lisans ve iletişim</h2>
+    </div>
+    <p><strong>Özel / kapalı kaynak.</strong> Yalnızca sahibi olunan veya yönetim yetkisi verilen cihazlarda
+    kullanılmak üzere geliştirilmiştir. Ayrıntılar için depodaki <code>LICENSE</code> dosyasına bak.</p>
+    <div class="table-wrap">
+      <table>
+        <tbody>
+          <tr><td><strong>Geliştirici</strong></td><td>ferit22901</td></tr>
+          <tr><td><strong>Sürüm</strong></td><td>1.0.0</td></tr>
+          <tr><td><strong>Depo</strong></td><td><a href="https://github.com/Memati8383/erlik">github.com/Memati8383/erlik</a></td></tr>
+          <tr><td><strong>Sürümler</strong></td><td><a href="https://github.com/Memati8383/erlik/releases">Releases</a></td></tr>
+          <tr><td><strong>Instagram</strong></td><td><a href="https://www.instagram.com/ferit22901/">@ferit22901</a></td></tr>
+          <tr><td><strong>Motor</strong></td><td>erlik — Go C2 + Kotlin ajan</td></tr>
+          <tr><td><strong>Arayüz</strong></td><td>cobalt — Dear ImGui + DirectX 11</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  </main>
+</div>
+
+<footer>
+  <div class="wrap">
+    <div>ERLİK © 2026 · Win32 + D3D11 + Dear ImGui 1.91.9b · v1.0.0</div>
+    <div><a href="https://github.com/Memati8383/erlik">GitHub</a> · <a href="https://github.com/Memati8383/erlik/releases">Releases</a> · <a href="https://github.com/Memati8383/erlik/blob/main/LICENSE">LICENSE</a></div>
+  </div>
+</footer>
+
+<button class="to-top" type="button" aria-label="Sayfanın başına dön" hidden>
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5"/><path d="m5 12 7-7 7 7"/></svg>
+</button>
+
+<div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Ekran görüntüsü önizleme" hidden>
+  <button class="lightbox-close" type="button" aria-label="Kapat">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>
+  </button>
+  <img alt="">
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script src="main.js"></script>
+</body>
+</html>
