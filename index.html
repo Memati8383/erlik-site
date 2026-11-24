@@ -2,15 +2,109 @@
 <html lang="tr">
 <head>
 <meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>ERLİK — Android filo komuta paneli</title>
 <meta name="description" content="ERLİK: Win32 + DirectX 11 + Dear ImGui ile çizilen Android filo komuta paneli. Kurulum, bağlantı, kullanım ve sorun giderme rehberi.">
+<link rel="canonical" href="https://erlik-panel.erlik-menu.workers.dev/">
+<meta name="robots" content="index, follow">
+
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="ERLİK">
+<meta property="og:locale" content="tr_TR">
+<meta property="og:title" content="ERLİK — Android filo komuta paneli">
+<meta property="og:description" content="Win32 + DirectX 11 + Dear ImGui ile çizilen Android filo komuta paneli. Kurulum, bağlantı, kullanım ve sorun giderme rehberi.">
+<meta property="og:url" content="https://erlik-panel.erlik-menu.workers.dev/">
+<meta property="og:image" content="https://erlik-panel.erlik-menu.workers.dev/assets/og-cover.jpg">
+<meta property="og:image:type" content="image/jpeg">
+<meta property="og:image:width" content="1060">
+<meta property="og:image:height" content="660">
+<meta property="og:image:alt" content="ERLİK komuta panosu">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="ERLİK — Android filo komuta paneli">
+<meta name="twitter:description" content="Win32 + DirectX 11 + Dear ImGui ile çizilen Android filo komuta paneli.">
+<meta name="twitter:image" content="https://erlik-panel.erlik-menu.workers.dev/assets/og-cover.jpg">
 <link rel="icon" href="assets/erlik-mark.png">
 <meta name="theme-color" content="#07080c">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap">
+<link rel="preload" href="assets/fonts/inter-var-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/jetbrains-mono-var-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/shots/02-dashboard.webp" as="image" type="image/webp" fetchpriority="high">
+<link rel="stylesheet" href="assets/fonts.css">
 <link rel="stylesheet" href="style.css">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "SoftwareApplication",
+      "name": "ERLİK",
+      "description": "Win32 + DirectX 11 + Dear ImGui ile çizilen Android filo komuta paneli.",
+      "applicationCategory": "UtilitiesApplication",
+      "operatingSystem": "Windows 10, Windows 11",
+      "softwareVersion": "1.0.0",
+      "url": "https://erlik-panel.erlik-menu.workers.dev/",
+      "downloadUrl": "https://github.com/Memati8383/erlik/releases/latest",
+      "license": "https://github.com/Memati8383/erlik/blob/main/LICENSE",
+      "author": { "@type": "Person", "name": "ferit22901" }
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Sunucu şart mı, panel tek başına çalışmaz mı?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Panel bir istemcidir: envanter, komut kuyruğu ve canlı akış erlikd'den gelir. Sunucu yoksa yalnız arayüz açılır, veri gelmez. Sunucu aynı makinede veya LAN'daki bir makinede çalışabilir."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Telefonla aynı Wi-Fi'da olmak zorunda mıyım?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Hayır. Aynı ağdaysan erlikd -lan yeterli. Farklı ağdaysan Genel Erişim tünelini açıp ajana tünel adresini verirsin."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Lisans anahtarı gerçekten doğrulanıyor mu?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Panel yalnızca biçimi denetler (16+ alfanümerik karakter). Gerçek kimlik doğrulama sunucu parolasıdır. Anahtar, Windows DPAPI ile şifrelenip config.ini içinde saklanır."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Veriler nerede tutuluyor?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Panel tarafında %APPDATA%\\ERLIK\\config.ini ve günlükler; cihaz, komut, olay ve konum verisi sunucunun veri dizinindeki SQLite tabanında. Panel kendi başına veri saklamaz."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "EXE imzasız — Windows uyarı veriyor, sorun olur mu?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Kod imzalama sertifikası olmadığı için SmartScreen uyarır. Dosyayı kendi derlemen veya release'ten indirdiysen Ek bilgi → Yine de çalıştır ile devam edebilirsin."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Kendi APK'mı üretmeden cihaz ekleyebilir miyim?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Evet. Ajan zaten kuruluysa Kopya sekmesinden tek kullanımlık anahtar üretip ajana girmen yeterli. APK üretimi, ajanı yeniden paketlemek veya özelleştirmek istediğinde gerekir."
+          }
+        }
+      ]
+    }
+  ]
+}
+</script>
 </head>
 <body>
 
@@ -43,7 +137,7 @@
         <a href="#sss">SSS</a>
       </nav>
     </details>
-    <a class="btn header-github" href="https://github.com/Memati8383/erlik" target="_blank" rel="noopener">GitHub</a>
+    <a class="btn header-github" href="https://github.com/Memati8383/erlik" target="_blank" rel="noopener noreferrer">GitHub</a>
   </div>
   <div class="scroll-progress" aria-hidden="true"><span></span></div>
 </header>
@@ -75,7 +169,7 @@
     </div>
   </div>
   <div class="hero-shot">
-    <img loading="eager" fetchpriority="high" decoding="async" width="1060" height="660" src="assets/shots/02-dashboard.png" alt="ERLİK komuta panosu">
+    <img loading="eager" fetchpriority="high" decoding="async" width="1060" height="660" src="assets/shots/02-dashboard.webp" alt="ERLİK komuta panosu">
   </div>
 </section>
 
@@ -310,12 +404,12 @@ flowchart TD
     </ol>
 
     <figure class="shot">
-      <img loading="lazy" decoding="async" width="1060" height="660" src="assets/shots/20-connect.png" alt="Bağlantı ekranı: beş aşama">
+      <img loading="lazy" decoding="async" width="1060" height="660" src="assets/shots/20-connect.webp" alt="Bağlantı ekranı: beş aşama">
       <figcaption>Bağlantı ekranı — beş aşama. Sunucuya ulaşılamazsa altta “Sunucu kapalı görünüyor. erlikd çalışıyor mu?” ipucu çıkar.</figcaption>
     </figure>
 
     <figure class="shot">
-      <img loading="lazy" decoding="async" width="1060" height="660" src="assets/shots/18-login.png" alt="Lisans ekranı">
+      <img loading="lazy" decoding="async" width="1060" height="660" src="assets/shots/18-login.webp" alt="Lisans ekranı">
       <figcaption>Lisans ekranı — anahtar, “Beni hatırla”, dil seçimi. Anahtar DPAPI ile şifrelenip saklanır.</figcaption>
     </figure>
 
@@ -342,7 +436,7 @@ erlikd -panel-open     # yalnız loopback'te giriş ekranını atla (kimlik doğ
     </div>
 
     <figure class="shot">
-      <img loading="lazy" decoding="async" width="1060" height="660" src="assets/shots/19-connect.png" alt="Başarılı yeniden bağlanma bildirimi">
+      <img loading="lazy" decoding="async" width="1060" height="660" src="assets/shots/19-connect.webp" alt="Başarılı yeniden bağlanma bildirimi">
       <figcaption>Bağlantı oturumu hatırlanır: sonraki açılışta “Tekrar hoş geldin” bildirimiyle doğrudan panoya düşer.</figcaption>
     </figure>
 
@@ -391,7 +485,7 @@ sequenceDiagram
       <li>Kota göstergesi depolama doluluğunu gösterir — panel <em>uyarır</em>, asla veri silmez.</li>
     </ul>
     <figure class="shot">
-      <img loading="lazy" decoding="async" width="1060" height="660" src="assets/shots/02-dashboard.png" alt="Pano">
+      <img loading="lazy" decoding="async" width="1060" height="660" src="assets/shots/02-dashboard.webp" alt="Pano">
       <figcaption>Pano — sayaçlar, konum haritası ve son olaylar.</figcaption>
     </figure>
 
@@ -405,7 +499,7 @@ sequenceDiagram
       <li>İptal edilen cihaz geri dönmez; kaydı geçmişte kalır.</li>
     </ul>
     <figure class="shot">
-      <img loading="lazy" decoding="async" width="1060" height="660" src="assets/shots/01-devices.png" alt="Cihazlar">
+      <img loading="lazy" decoding="async" width="1060" height="660" src="assets/shots/01-devices.webp" alt="Cihazlar">
       <figcaption>Cihazlar — carousel görünümü, durum rozetleri ve son görülme.</figcaption>
     </figure>
 
@@ -418,7 +512,7 @@ sequenceDiagram
     Sağdaki geçmiş, komutun durumunu sunucunun söylediği gibi gösterir:
     <code>queued → finished / failed</code>. Panel kendi durum makinesini uydurmaz.</p>
     <figure class="shot">
-      <img loading="lazy" decoding="async" width="1060" height="660" src="assets/shots/03-device-detail.png" alt="Takip sekmesi">
+      <img loading="lazy" decoding="async" width="1060" height="660" src="assets/shots/03-device-detail.webp" alt="Takip sekmesi">
       <figcaption>Takip — PING komutu gönderilmiş, sağda komut geçmişi ve sonuçları.</figcaption>
     </figure>
 
@@ -426,7 +520,7 @@ sequenceDiagram
     <p>Ajanın gönderdiği JPEG kareleri gösterilir. Çözme işçi iş parçacığında yapılır, dokuya yalnız yeni kare
     yüklenir; bu yüzden akış sırasında arayüz donmaz.</p>
     <figure class="shot">
-      <img loading="lazy" decoding="async" width="1060" height="660" src="assets/shots/04-live-screen.png" alt="Canlı ekran">
+      <img loading="lazy" decoding="async" width="1060" height="660" src="assets/shots/04-live-screen.webp" alt="Canlı ekran">
       <figcaption>Canlı ekran — ajan kareleri, akış durumu göstergesi.</figcaption>
     </figure>
 
@@ -434,7 +528,7 @@ sequenceDiagram
     <p>Ekran görüntüsü al, koordinata dokun, kaydır, donanım tuşlarına bas, metin yaz, UI ağacını çek ve
     metne göre tıkla. Cihaz yöneticisi eylemleri (kilit, parola, kamera) de burada.</p>
     <figure class="shot">
-      <img loading="lazy" decoding="async" width="1060" height="660" src="assets/shots/05-remote.png" alt="Kumanda">
+      <img loading="lazy" decoding="async" width="1060" height="660" src="assets/shots/05-remote.webp" alt="Kumanda">
       <figcaption>Kumanda — dokunma koordinatları, kaydırma, tuşlar ve metin girişi.</figcaption>
     </figure>
 
@@ -442,7 +536,7 @@ sequenceDiagram
     <p>Dizin gezme, dosya indirme (blob) ve cihaza yükleme. Silinen dosyalar işaretli kalır;
     <code>FILE_RESTORE</code> ile geri alınabilir, <code>FILE_PURGE</code> kalıcı siler.</p>
     <figure class="shot">
-      <img loading="lazy" decoding="async" width="1060" height="660" src="assets/shots/06-files.png" alt="Dosya gezgini">
+      <img loading="lazy" decoding="async" width="1060" height="660" src="assets/shots/06-files.webp" alt="Dosya gezgini">
       <figcaption>Dosya — uzak dizin listesi, boyut ve tarih sütunları.</figcaption>
     </figure>
 
@@ -450,7 +544,7 @@ sequenceDiagram
     <p>GPS noktaları OpenStreetMap üzerinde; sağda enlem/boylam, doğruluk, hız, sağlayıcı, son görülme,
     düzeltme sayısı ve rota özeti (toplam mesafe, hareket süresi, durak sayısı).</p>
     <figure class="shot">
-      <img loading="lazy" decoding="async" width="1060" height="660" src="assets/shots/07-location.png" alt="Konum">
+      <img loading="lazy" decoding="async" width="1060" height="660" src="assets/shots/07-location.webp" alt="Konum">
       <figcaption>Konum — harita ve rota özeti paneli.</figcaption>
     </figure>
 
@@ -458,7 +552,7 @@ sequenceDiagram
     <p>Cihazdan gelen olaylar: bildirimler, servis durumları, komut sonuçları. Her satırda sıra numarası ve
     JSON yükü görünür. Sütunlar sunucudan geldiği gibi gösterilir.</p>
     <figure class="shot">
-      <img loading="lazy" decoding="async" width="1060" height="660" src="assets/shots/08-history.png" alt="Olay geçmişi">
+      <img loading="lazy" decoding="async" width="1060" height="660" src="assets/shots/08-history.webp" alt="Olay geçmişi">
       <figcaption>Geçmiş — olay akışı ve yük ayrıntısı.</figcaption>
     </figure>
 
@@ -466,7 +560,7 @@ sequenceDiagram
     <p>Yeni cihaz eklemek için tek kullanımlık anahtar üretilir, panoya kopyalanır ve dört adımlı rehberle
     ajana girilir. Anahtar sunucuda tek kullanımlıktır; yeniden kullanılamaz.</p>
     <figure class="shot">
-      <img loading="lazy" decoding="async" width="1060" height="660" src="assets/shots/09-clone.png" alt="Kopya sekmesi">
+      <img loading="lazy" decoding="async" width="1060" height="660" src="assets/shots/09-clone.webp" alt="Kopya sekmesi">
       <figcaption>Kopya — anahtar üretimi ve kurulum adımları.</figcaption>
     </figure>
 
@@ -480,7 +574,7 @@ sequenceDiagram
       <li>Değişiklik cihaza <code>CONFIG_APPLY</code> komutuyla iner.</li>
     </ul>
     <figure class="shot">
-      <img loading="lazy" decoding="async" width="1060" height="660" src="assets/shots/10-config.png" alt="Yapılandırma">
+      <img loading="lazy" decoding="async" width="1060" height="660" src="assets/shots/10-config.webp" alt="Yapılandırma">
       <figcaption>Yapılandırma — global belge ve revizyon listesi.</figcaption>
     </figure>
 
@@ -489,7 +583,7 @@ sequenceDiagram
     Süzgeçler bunları ayırır; proto enum adları okunur metne çevrilir (“COMMAND_TYPE_PING” → “ping”).
     Görünen her şey CSV olarak dışa aktarılabilir.</p>
     <figure class="shot">
-      <img loading="lazy" decoding="async" width="1060" height="660" src="assets/shots/11-logs.png" alt="Loglar">
+      <img loading="lazy" decoding="async" width="1060" height="660" src="assets/shots/11-logs.webp" alt="Loglar">
       <figcaption>Loglar — canlı akış, süzgeçler ve dışa aktarma.</figcaption>
     </figure>
 
@@ -505,7 +599,7 @@ sequenceDiagram
       <li><strong>Derle ve kur</strong><p><em>Derle</em> → <em>Kur + izin</em> (ADB) veya QR ile telefonda aç.</p></li>
     </ol>
     <figure class="shot">
-      <img loading="lazy" decoding="async" width="1060" height="660" src="assets/shots/12-apk.png" alt="APK üretimi">
+      <img loading="lazy" decoding="async" width="1060" height="660" src="assets/shots/12-apk.webp" alt="APK üretimi">
       <figcaption>APK üretimi — binder, ajan, kimlik, izin/özellik maskeleri ve gizleme katmanları.</figcaption>
     </figure>
     <figure class="diagram">
@@ -536,7 +630,7 @@ flowchart TD
       <li>Tünel kapalıyken panel yalnız LAN/loopback üzerinden erişilebilir.</li>
     </ul>
     <figure class="shot">
-      <img loading="lazy" decoding="async" width="1060" height="660" src="assets/shots/13-tunnel.png" alt="Genel erişim">
+      <img loading="lazy" decoding="async" width="1060" height="660" src="assets/shots/13-tunnel.webp" alt="Genel erişim">
       <figcaption>Genel erişim — tünel durumu, genel adres ve keşif belgesi.</figcaption>
     </figure>
     <figure class="diagram">
@@ -558,7 +652,7 @@ flowchart LR
     <p>Dil (7 dil), vurgu rengi (6 hazır + özel), arka plan stili (Aurora, Waves, Warp, Grid, sabit),
     parçacık/cam/animasyon yoğunluğu, DPI ölçeği, tepsi davranışı, “üstte tut” ve stream proof.</p>
     <figure class="shot">
-      <img loading="lazy" decoding="async" width="1060" height="660" src="assets/shots/14-settings.png" alt="Ayarlar">
+      <img loading="lazy" decoding="async" width="1060" height="660" src="assets/shots/14-settings.webp" alt="Ayarlar">
       <figcaption>Ayarlar — görünüm, dil ve davranış seçenekleri.</figcaption>
     </figure>
 
@@ -566,17 +660,17 @@ flowchart LR
     <p><em>Hakkında</em> sürüm, derleme zamanı ve lisans bilgisini gösterir. <kbd>Ctrl</kbd>+<kbd>K</kbd>
     paleti sayfa ve cihaz arar; zil simgesi bildirim merkezini açar ve okunmamışları sayar.</p>
     <div class="grid grid-2">
-      <figure class="shot" style="margin:0">
-        <img loading="lazy" decoding="async" width="1060" height="660" src="assets/shots/15-about.png" alt="Hakkında">
+      <figure class="shot shot-inline">
+        <img loading="lazy" decoding="async" width="1060" height="660" src="assets/shots/15-about.webp" alt="Hakkında">
         <figcaption>Hakkında — sürüm ve derleme bilgisi.</figcaption>
       </figure>
-      <figure class="shot" style="margin:0">
-        <img loading="lazy" decoding="async" width="1060" height="660" src="assets/shots/17-command-palette.png" alt="Komut paleti">
+      <figure class="shot shot-inline">
+        <img loading="lazy" decoding="async" width="1060" height="660" src="assets/shots/17-command-palette.webp" alt="Komut paleti">
         <figcaption>Komut paleti — Ctrl+K ile sayfa/cihaz arama.</figcaption>
       </figure>
     </div>
     <figure class="shot">
-      <img loading="lazy" decoding="async" width="1060" height="660" src="assets/shots/16-notifications.png" alt="Bildirim merkezi">
+      <img loading="lazy" decoding="async" width="1060" height="660" src="assets/shots/16-notifications.webp" alt="Bildirim merkezi">
       <figcaption>Bildirim merkezi — toast arşivi ve komut sonuçları.</figcaption>
     </figure>
 
@@ -856,7 +950,6 @@ flowchart LR
   <img alt="">
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
 <script src="main.js"></script>
 </body>
 </html>

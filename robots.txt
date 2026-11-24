@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+
+# AI içerik sinyalleri: arama dizinleme serbest, model eğitimi kapalı.
+Content-Signal: search=yes, ai-input=no, ai-train=no
+
+Sitemap: https://erlik-panel.erlik-menu.workers.dev/sitemap.xml

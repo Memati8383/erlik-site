@@ -5,8 +5,24 @@
 
   var reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-  /* ---------- mermaid ---------- */
-  if (window.mermaid) {
+  /* ---------- mermaid (tembel yükleme) ---------- */
+  /* 3.4 MB'lık mermaid paketi ilk boyamayı geciktirmesin: yalnızca ilk
+     diyagram görüş alanına yaklaşınca indirilip çalıştırılır. */
+  var mermaidStarted = false;
+
+  function mermaidFallback() {
+    document.querySelectorAll(".mermaid").forEach(function (el) {
+      el.style.fontFamily = "var(--mono)";
+      el.style.fontSize = "12px";
+      el.style.whiteSpace = "pre";
+      el.style.justifyContent = "flex-start";
+    });
+  }
+
+  function initMermaid() {
+    if (mermaidStarted || !window.mermaid) return;
+    mermaidStarted = true;
+
     mermaid.initialize({
       startOnLoad: false,
       theme: "base",
@@ -41,7 +57,7 @@
       },
       flowchart: { curve: "basis", padding: 14, useMaxWidth: true },
       sequence: { useMaxWidth: true, mirrorActors: false, wrap: true },
-      securityLevel: "loose"
+      securityLevel: "strict"
     });
 
     /* Yazı tipi yüklenmeden çizersek düğüm genişlikleri yanlış hesaplanıp
@@ -54,15 +70,43 @@
       .then(function () {
         return mermaid.run({ querySelector: ".mermaid" });
       })
+      .then(function () {
+        /* Diyagramlar yüksekliği değiştirdiği için çapa hedefi kaymış olabilir. */
+        scheduleHashCorrection();
+      })
       .catch(function (err) {
         console.error("mermaid:", err);
-        document.querySelectorAll(".mermaid").forEach(function (el) {
-          el.style.fontFamily = "var(--mono)";
-          el.style.fontSize = "12px";
-          el.style.whiteSpace = "pre";
-          el.style.justifyContent = "flex-start";
-        });
+        mermaidFallback();
       });
+  }
+
+  function loadMermaid() {
+    if (window.mermaid) return initMermaid();
+
+    var script = document.createElement("script");
+    script.src = "assets/vendor/mermaid.min.js";
+    script.async = true;
+    script.onload = initMermaid;
+    script.onerror = mermaidFallback;
+    document.head.appendChild(script);
+  }
+
+  var diagrams = document.querySelectorAll(".diagram");
+
+  if (diagrams.length && "IntersectionObserver" in window) {
+    var diagramObserver = new IntersectionObserver(
+      function (entries) {
+        if (entries.some(function (e) { return e.isIntersecting; })) {
+          diagramObserver.disconnect();
+          loadMermaid();
+        }
+      },
+      { rootMargin: "800px 0px" }
+    );
+
+    diagrams.forEach(function (el) { diagramObserver.observe(el); });
+  } else if (diagrams.length) {
+    loadMermaid();
   }
 
   /* ---------- içindekiler: aktif başlık ---------- */
@@ -261,13 +305,51 @@
     }
   });
 
-  /* ---------- bağlantı geçmişi ile gelen çapaya kaydırma ---------- */
-  if (!reduceMotion && location.hash) {
+  /* ---------- doğrudan gelen çapa bağlantısı ---------- */
+  /* Tarayıcı hash'e yazı tipleri yüklenmeden atlar; metin yeniden akınca
+     hedef kayar. Fontlar hazır olunca konumu bir kez düzelt. */
+  function correctHashPosition() {
+    if (!location.hash) return;
     var target = document.getElementById(location.hash.slice(1));
-    if (target) {
-      requestAnimationFrame(function () {
-        target.scrollIntoView({ behavior: "smooth", block: "start" });
-      });
-    }
+    if (!target) return;
+    target.scrollIntoView({ behavior: "auto", block: "start" });
   }
+
+  /* Yumuşak kaydırma sürerken mermaid yüksekliği değişirse hedef kayar;
+     kaydırma bittikten sonra konumu bir kez düzelt. */
+  var hashCorrectionTimer = 0;
+
+  function scheduleHashCorrection() {
+    if (!location.hash) return;
+    clearTimeout(hashCorrectionTimer);
+    hashCorrectionTimer = setTimeout(function () {
+      var target = document.getElementById(location.hash.slice(1));
+      if (!target) return;
+      var offset = parseFloat(getComputedStyle(document.documentElement).scrollPaddingTop) || 0;
+      if (Math.abs(target.getBoundingClientRect().top - offset) > 2) {
+        correctHashPosition();
+      }
+    }, 900);
+  }
+
+  if (location.hash) {
+    var fontsDone = document.fonts && document.fonts.ready
+      ? document.fonts.ready
+      : Promise.resolve();
+
+    fontsDone.then(function () {
+      requestAnimationFrame(correctHashPosition);
+    });
+
+    window.addEventListener("load", function () {
+      requestAnimationFrame(correctHashPosition);
+    });
+  }
+
+  window.addEventListener("hashchange", scheduleHashCorrection);
+
+  document.addEventListener("click", function (e) {
+    var link = e.target.closest ? e.target.closest('a[href^="#"]') : null;
+    if (link && link.getAttribute("href").length > 1) scheduleHashCorrection();
+  });
 })();

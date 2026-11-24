@@ -421,7 +421,9 @@ kbd {
 main { min-width: 0; counter-reset: sec; }
 
 section { margin-bottom: 74px; }
-main > section { counter-increment: sec; scroll-margin-top: calc(var(--header-h) + 22px); }
+main > section {
+  counter-increment: sec;
+}
 
 .section-head { margin-bottom: 22px; }
 
@@ -602,6 +604,8 @@ figure.shot {
 }
 
 figure.shot:hover { border-color: var(--border-strong); }
+
+figure.shot.shot-inline { margin: 0; }
 
 figure.shot img { width: 100%; height: auto; cursor: zoom-in; aspect-ratio: 1060 / 660; }
 
