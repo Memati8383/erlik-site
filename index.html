@@ -27,12 +27,12 @@
 <meta name="twitter:description" content="Win32 + DirectX 11 + Dear ImGui ile çizilen Android filo komuta paneli.">
 <meta name="twitter:image" content="https://erlik-panel.erlik-menu.workers.dev/assets/og-cover.jpg">
 <link rel="icon" href="assets/erlik-mark.png">
-<meta name="theme-color" content="#07080c">
-<link rel="preload" href="assets/fonts/inter-var-latin.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="preload" href="assets/fonts/jetbrains-mono-var-latin.woff2" as="font" type="font/woff2" crossorigin>
+<meta name="theme-color" content="#e9ebe5">
 <link rel="preload" href="assets/shots/02-dashboard.webp" as="image" type="image/webp" fetchpriority="high">
 <link rel="stylesheet" href="assets/fonts.css">
-<link rel="stylesheet" href="style.css">
+<!-- v= sürümü: tarayıcı eski css/js'i önbellekten vermesin -->
+<link rel="stylesheet" href="style.css?v=17">
+<script src="theme.js?v=17"></script>
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -108,6 +108,8 @@
 </head>
 <body>
 
+<div class="page-texture" aria-hidden="true"><canvas class="page-dots"></canvas></div>
+
 <a class="skip-link" href="#main">İçeriğe geç</a>
 
 <header class="site-header">
@@ -137,15 +139,35 @@
         <a href="#sss">SSS</a>
       </nav>
     </details>
+    <label class="theme-switch">
+      <input type="checkbox" class="theme-switch__checkbox" role="switch" aria-label="Koyu tema">
+      <div class="theme-switch__container">
+        <div class="theme-switch__clouds"></div>
+        <div class="theme-switch__stars-container">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 144 55" fill="none" aria-hidden="true">
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M135.831 3.00688C135.055 3.85027 134.111 4.29946 133 4.35447C134.111 4.40947 135.055 4.85867 135.831 5.71123C136.607 6.55462 136.996 7.56303 136.996 8.72727C136.996 7.95722 137.172 7.25134 137.525 6.59129C137.886 5.93124 138.372 5.39954 138.98 5.00535C139.598 4.60199 140.268 4.39114 141 4.35447C139.88 4.2903 138.936 3.85027 138.16 3.00688C137.384 2.16348 136.996 1.16425 136.996 0C136.996 1.16425 136.607 2.16348 135.831 3.00688ZM31 23.3545C32.1114 23.2995 33.0551 22.8503 33.8313 22.0069C34.6075 21.1635 34.9956 20.1642 34.9956 19C34.9956 20.1642 35.3837 21.1635 36.1599 22.0069C36.9361 22.8503 37.8798 23.2903 39 23.3545C38.2679 23.3911 37.5976 23.602 36.9802 24.0053C36.3716 24.3995 35.8864 24.9312 35.5248 25.5913C35.172 26.2513 34.9956 26.9572 34.9956 27.7273C34.9956 26.563 34.6075 25.5546 33.8313 24.7112C33.0551 23.8587 32.1114 23.4095 31 23.3545ZM0 36.3545C1.11136 36.2995 2.05513 35.8503 2.83131 35.0069C3.6075 34.1635 3.99559 33.1642 3.99559 32C3.99559 33.1642 4.38368 34.1635 5.15987 35.0069C5.93605 35.8503 6.87982 36.2903 8 36.3545C7.26792 36.3911 6.59757 36.602 5.98015 37.0053C5.37155 37.3995 4.88644 37.9312 4.52481 38.5913C4.172 39.2513 3.99559 39.9572 3.99559 40.7273C3.99559 39.563 3.6075 38.5546 2.83131 37.7112C2.05513 36.8587 1.11136 36.4095 0 36.3545ZM56.8313 24.0069C56.0551 24.8503 55.1114 25.2995 54 25.3545C55.1114 25.4095 56.0551 25.8587 56.8313 26.7112C57.6075 27.5546 57.9956 28.563 57.9956 29.7273C57.9956 28.9572 58.172 28.2513 58.5248 27.5913C58.8864 26.9312 59.3716 26.3995 59.9802 26.0053C60.5976 25.602 61.2679 25.3911 62 25.3545C60.8798 25.2903 59.9361 24.8503 59.1599 24.0069C58.3837 23.1635 57.9956 22.1642 57.9956 21C57.9956 22.1642 57.6075 23.1635 56.8313 24.0069ZM81 25.3545C82.1114 25.2995 83.0551 24.8503 83.8313 24.0069C84.6075 23.1635 84.9956 22.1642 84.9956 21C84.9956 22.1642 85.3837 23.1635 86.1599 24.0069C86.9361 24.8503 87.8798 25.2903 89 25.3545C88.2679 25.3911 87.5976 25.602 86.9802 26.0053C86.3716 26.3995 85.8864 26.9312 85.5248 27.5913C85.172 28.2513 84.9956 28.9572 84.9956 29.7273C84.9956 28.563 84.6075 27.5546 83.8313 26.7112C83.0551 25.8587 82.1114 25.4095 81 25.3545ZM136 36.3545C137.111 36.2995 138.055 35.8503 138.831 35.0069C139.607 34.1635 139.996 33.1642 139.996 32C139.996 33.1642 140.384 34.1635 141.16 35.0069C141.936 35.8503 142.88 36.2903 144 36.3545C143.268 36.3911 142.598 36.602 141.98 37.0053C141.372 37.3995 140.886 37.9312 140.525 38.5913C140.172 39.2513 139.996 39.9572 139.996 40.7273C139.996 39.563 139.607 38.5546 138.831 37.7112C138.055 36.8587 137.111 36.4095 136 36.3545ZM101.831 49.0069C101.055 49.8503 100.111 50.2995 99 50.3545C100.111 50.4095 101.055 50.8587 101.831 51.7112C102.607 52.5546 102.996 53.563 102.996 54.7273C102.996 53.9572 103.172 53.2513 103.525 52.5913C103.886 51.9312 104.372 51.3995 104.98 51.0053C105.598 50.602 106.268 50.3911 107 50.3545C105.88 50.2903 104.936 49.8503 104.16 49.0069C103.384 48.1635 102.996 47.1642 102.996 46C102.996 47.1642 102.607 48.1635 101.831 49.0069Z" fill="currentColor"/>
+          </svg>
+        </div>
+        <div class="theme-switch__circle-container">
+          <div class="theme-switch__sun-moon-container">
+            <div class="theme-switch__moon">
+              <div class="theme-switch__spot"></div>
+              <div class="theme-switch__spot"></div>
+              <div class="theme-switch__spot"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </label>
     <a class="btn header-github" href="https://github.com/Memati8383/erlik" target="_blank" rel="noopener noreferrer">GitHub</a>
   </div>
   <div class="scroll-progress" aria-hidden="true"><span></span></div>
 </header>
 
 <section class="hero" id="top" aria-labelledby="hero-title">
-  <div>
-    <span class="eyebrow">Windows 10 / 11, sürüm 1.0.0</span>
-    <h1 id="hero-title">Android filo <span>komuta paneli</span></h1>
+  <div class="hero-copy">
+    <p class="eyebrow">Sürüm 1.0.0, Windows 10 / 11 için</p>
+    <h1 id="hero-title">Android filo komuta paneli</h1>
     <p class="lede">
       ERLİK, <code>erlikd</code> sunucusuna bağlanan Android cihazları tek bir karanlık arayüzden
       izlemek, yönetmek ve komuta etmek için yazılmış bir masaüstü konsoludur. Arayüz tamamen
@@ -159,17 +181,17 @@
       <a class="btn" href="#kurulum">Kurulum rehberi</a>
       <a class="btn" href="#baglanti">Bağlantı nasıl kurulur</a>
     </div>
-    <div class="badges">
-      <span class="badge">C++17 · MSVC v143</span>
-      <span class="badge">Dear ImGui 1.91.9b</span>
-      <span class="badge">DirectX 11</span>
-      <span class="badge">/MT statik</span>
-      <span class="badge">7 dil</span>
-    </div>
   </div>
-  <div class="hero-shot">
+  <dl class="spec">
+    <div><dt>Platform</dt><dd>Windows 10 2004+ / 11</dd></div>
+    <div><dt>Arayüz</dt><dd>Dear ImGui 1.91.9b, DirectX 11</dd></div>
+    <div><dt>Derleme</dt><dd>C++17, MSVC v143, /MT statik</dd></div>
+    <div><dt>Diller</dt><dd>7 dil, varsayılan Türkçe</dd></div>
+  </dl>
+  <figure class="hero-shot">
     <img loading="eager" fetchpriority="high" decoding="async" width="1060" height="660" src="assets/shots/02-dashboard.webp" alt="ERLİK komuta panosu">
-  </div>
+    <figcaption>Pano — dört sayaç, seçili cihazın son konumu ve canlı olay akışı.</figcaption>
+  </figure>
 </section>
 
 <div class="layout">
@@ -270,25 +292,25 @@ flowchart LR
       <p>On dört modül aynı kabuk içinde; her biri kendi ekran dosyasında yaşar.</p>
     </div>
 
-    <div class="grid grid-3">
-      <div class="card"><h3>Pano</h3><p>Toplam / çevrimiçi / çevrimdışı sayaçları, son konum haritası, son olaylar ve depolama kotası.</p></div>
-      <div class="card"><h3>Cihazlar</h3><p>Carousel ve liste görünümü, ad/grup arama, durum süzgeci, 4 saniyelik otomatik tazeleme.</p></div>
-      <div class="card"><h3>Takip</h3><p>30+ komut tipi için katalog, JSON argüman şablonu, kuyruk ve sonuç geçmişi.</p></div>
-      <div class="card"><h3>Canlı ekran</h3><p>Ajanın JPEG kareleri; çözme işçi iş parçacığında, doku üretimi arayüzde.</p></div>
-      <div class="card"><h3>Kumanda</h3><p>Dokunma, kaydırma, donanım tuşları, metin yazma, UI ağacından öğeye tıklama.</p></div>
-      <div class="card"><h3>Dosya</h3><p>Dizin gezme, indirme/yükleme, silinen dosyaları görme ve kurtarma.</p></div>
-      <div class="card"><h3>Konum</h3><p>GPS noktaları, doğruluk/hız, rota özeti (km, hareket süresi, durak), OpenStreetMap.</p></div>
-      <div class="card"><h3>Geçmiş</h3><p>Olay akışı, sıra numarası, JSON yük görüntüleme.</p></div>
-      <div class="card"><h3>Kopya</h3><p>Tek kullanımlık kayıt anahtarı, panoya kopyalama, dört adımlı kurulum rehberi.</p></div>
-      <div class="card"><h3>Loglar</h3><p>SSE canlı akışı, komut/olay/denetim süzgeçleri, okunur enum adları, CSV dışa aktarma.</p></div>
-      <div class="card"><h3>Yapılandırma</h3><p>Global ve cihaz kapsamlı ajan belgesi, revizyon geçmişi, geri alma, toplu itme.</p></div>
-      <div class="card"><h3>APK üret</h3><p>Binder + ajan birleştirme, etiket/paket/ikon, izin maskeleri, gizleme, QR ile kurulum.</p></div>
-      <div class="card"><h3>Genel erişim</h3><p>cloudflared indirme/kurma, HTTPS tüneli, keşif belgesi yayını.</p></div>
-      <div class="card"><h3>Ayarlar</h3><p>7 dil, 6 hazır vurgu + özel renk, arka plan stilleri, DPI ölçeği, tepsi davranışı.</p></div>
+    <div class="modules">
+      <article class="module"><span class="module-index" aria-hidden="true">01</span><h3>Pano</h3><p>Toplam / çevrimiçi / çevrimdışı sayaçları, son konum haritası, son olaylar ve depolama kotası.</p></article>
+      <article class="module"><span class="module-index" aria-hidden="true">02</span><h3>Cihazlar</h3><p>Carousel ve liste görünümü, ad/grup arama, durum süzgeci, 4 saniyelik otomatik tazeleme.</p></article>
+      <article class="module"><span class="module-index" aria-hidden="true">03</span><h3>Takip</h3><p>30+ komut tipi için katalog, JSON argüman şablonu, kuyruk ve sonuç geçmişi.</p></article>
+      <article class="module"><span class="module-index" aria-hidden="true">04</span><h3>Canlı ekran</h3><p>Ajanın JPEG kareleri; çözme işçi iş parçacığında, doku üretimi arayüzde.</p></article>
+      <article class="module"><span class="module-index" aria-hidden="true">05</span><h3>Kumanda</h3><p>Dokunma, kaydırma, donanım tuşları, metin yazma, UI ağacından öğeye tıklama.</p></article>
+      <article class="module"><span class="module-index" aria-hidden="true">06</span><h3>Dosya</h3><p>Dizin gezme, indirme/yükleme, silinen dosyaları görme ve kurtarma.</p></article>
+      <article class="module"><span class="module-index" aria-hidden="true">07</span><h3>Konum</h3><p>GPS noktaları, doğruluk/hız, rota özeti (km, hareket süresi, durak), OpenStreetMap.</p></article>
+      <article class="module"><span class="module-index" aria-hidden="true">08</span><h3>Geçmiş</h3><p>Olay akışı, sıra numarası, JSON yük görüntüleme.</p></article>
+      <article class="module"><span class="module-index" aria-hidden="true">09</span><h3>Kopya</h3><p>Tek kullanımlık kayıt anahtarı, panoya kopyalama, dört adımlı kurulum rehberi.</p></article>
+      <article class="module"><span class="module-index" aria-hidden="true">10</span><h3>Loglar</h3><p>SSE canlı akışı, komut/olay/denetim süzgeçleri, okunur enum adları, CSV dışa aktarma.</p></article>
+      <article class="module"><span class="module-index" aria-hidden="true">11</span><h3>Yapılandırma</h3><p>Global ve cihaz kapsamlı ajan belgesi, revizyon geçmişi, geri alma, toplu itme.</p></article>
+      <article class="module"><span class="module-index" aria-hidden="true">12</span><h3>APK üret</h3><p>Binder + ajan birleştirme, etiket/paket/ikon, izin maskeleri, gizleme, QR ile kurulum.</p></article>
+      <article class="module"><span class="module-index" aria-hidden="true">13</span><h3>Genel erişim</h3><p>cloudflared indirme/kurma, HTTPS tüneli, keşif belgesi yayını.</p></article>
+      <article class="module"><span class="module-index" aria-hidden="true">14</span><h3>Ayarlar</h3><p>7 dil, 6 hazır vurgu + özel renk, arka plan stilleri, DPI ölçeği, tepsi davranışı.</p></article>
     </div>
 
     <h3>Deneyim tarafı</h3>
-    <ul>
+    <ul class="notes-list">
       <li><strong>Komut paleti</strong> (<kbd>Ctrl</kbd>+<kbd>K</kbd>): sayfalar ve cihazlar tek kutuda; ok tuşları + Enter.</li>
       <li><strong>Bildirim merkezi</strong>: her toast arşivlenir, zil sayacı okunmamışları gösterir.</li>
       <li><strong>Bağlama duyarlı ESC</strong>: açık katman varsa onu kapatır, yoksa paneli tepsiye indirir.</li>
@@ -326,15 +348,29 @@ flowchart LR
       </table>
     </div>
 
-    <pre><code>build.bat</code></pre>
+    <figure class="term">
+      <div class="term-bar">
+        <span class="term-dots" aria-hidden="true"><i></i><i></i><i></i></span>
+        <span class="term-title">cmd.exe — proje kökü</span>
+        <button class="term-copy" type="button">Kopyala</button>
+      </div>
+      <pre class="term-body"><code>build.bat</code></pre>
+    </figure>
 
     <p><code>build.bat</code>, <code>vswhere.exe</code> ile MSVC'yi bulur; Community / Professional / Enterprise /
     BuildTools ve VS 2019 kurulumlarını sırayla dener. Beklenen çıktı:</p>
 
-    <pre><code>[1/3] derleniyor...
+    <figure class="term">
+      <div class="term-bar">
+        <span class="term-dots" aria-hidden="true"><i></i><i></i><i></i></span>
+        <span class="term-title">cmd.exe — build.bat çıktısı</span>
+        <button class="term-copy" type="button">Kopyala</button>
+      </div>
+      <pre class="term-body"><code>[1/3] derleniyor...
 [2/3] kaynaklar...
 [3/3] baglaniyor...
 [OK] build\ERLIK.exe</code></pre>
+    </figure>
 
     <p>Derleme bayrakları: <code>/std:c++17 /O2 /MT /utf-8 /MP /W3</code>. <code>/MT</code> sayesinde
     çıktı tek başına çalışır — Visual C++ redistributable kurmak gerekmez.</p>
@@ -426,8 +462,15 @@ flowchart TD
       </table>
     </div>
 
-    <pre><code>erlikd -lan            # LAN'daki telefonlar erişebilsin
+    <figure class="term">
+      <div class="term-bar">
+        <span class="term-dots" aria-hidden="true"><i></i><i></i><i></i></span>
+        <span class="term-title">cmd.exe — erlikd sunucusu</span>
+        <button class="term-copy" type="button">Kopyala</button>
+      </div>
+      <pre class="term-body"><code>erlikd -lan            # LAN'daki telefonlar erişebilsin
 erlikd -panel-open     # yalnız loopback'te giriş ekranını atla (kimlik doğrulamayı atlamaz)</code></pre>
+    </figure>
 
     <div class="note">
       <strong>Loopback kuralı:</strong> aynı makinede çalışırken <code>-panel-open</code> giriş ekranını atlar;
@@ -857,53 +900,75 @@ flowchart LR
       <h2>Sık sorulan sorular</h2>
     </div>
 
-    <details><summary>Sunucu şart mı, panel tek başına çalışmaz mı?</summary>
-      <p>Panel bir istemcidir: envanter, komut kuyruğu ve canlı akış <code>erlikd</code>'den gelir.
-      Sunucu yoksa yalnız arayüz açılır, veri gelmez. Sunucu aynı makinede veya LAN'daki bir makinede çalışabilir.</p>
-    </details>
+    <div class="faq">
+      <details class="faq-item"><summary><span class="faq-avatar" aria-hidden="true">S</span><span class="faq-q">Sunucu şart mı, panel tek başına çalışmaz mı?</span><span class="faq-mark" aria-hidden="true"></span></summary>
+        <div class="faq-reply"><span class="faq-avatar faq-avatar--reply" aria-hidden="true">Y</span>
+          <p>Panel bir istemcidir: envanter, komut kuyruğu ve canlı akış <code>erlikd</code>'den gelir.
+          Sunucu yoksa yalnız arayüz açılır, veri gelmez. Sunucu aynı makinede veya LAN'daki bir makinede çalışabilir.</p>
+        </div>
+      </details>
 
-    <details><summary>Telefonla aynı Wi-Fi'da olmak zorunda mıyım?</summary>
-      <p>Hayır. Aynı ağdaysan <code>erlikd -lan</code> yeterli. Farklı ağdaysan Genel Erişim tünelini açıp
-      ajana tünel adresini verirsin.</p>
-    </details>
+      <details class="faq-item"><summary><span class="faq-avatar" aria-hidden="true">S</span><span class="faq-q">Telefonla aynı Wi-Fi'da olmak zorunda mıyım?</span><span class="faq-mark" aria-hidden="true"></span></summary>
+        <div class="faq-reply"><span class="faq-avatar faq-avatar--reply" aria-hidden="true">Y</span>
+          <p>Hayır. Aynı ağdaysan <code>erlikd -lan</code> yeterli. Farklı ağdaysan Genel Erişim tünelini açıp
+          ajana tünel adresini verirsin.</p>
+        </div>
+      </details>
 
-    <details><summary>Lisans anahtarı gerçekten doğrulanıyor mu?</summary>
-      <p>Panel yalnızca biçimi denetler (16+ alfanümerik karakter). Gerçek kimlik doğrulama sunucu parolasıdır.
-      Anahtar, Windows DPAPI ile şifrelenip <code>config.ini</code> içinde saklanır.</p>
-    </details>
+      <details class="faq-item"><summary><span class="faq-avatar" aria-hidden="true">S</span><span class="faq-q">Lisans anahtarı gerçekten doğrulanıyor mu?</span><span class="faq-mark" aria-hidden="true"></span></summary>
+        <div class="faq-reply"><span class="faq-avatar faq-avatar--reply" aria-hidden="true">Y</span>
+          <p>Panel yalnızca biçimi denetler (16+ alfanümerik karakter). Gerçek kimlik doğrulama sunucu parolasıdır.
+          Anahtar, Windows DPAPI ile şifrelenip <code>config.ini</code> içinde saklanır.</p>
+        </div>
+      </details>
 
-    <details><summary>“Demo key” ne yapıyor?</summary>
-      <p>Lisans alanını örnek bir anahtarla doldurur; biçim denetimini geçmen için. Sunucu tarafında bir yetki vermez.</p>
-    </details>
+      <details class="faq-item"><summary><span class="faq-avatar" aria-hidden="true">S</span><span class="faq-q">“Demo key” ne yapıyor?</span><span class="faq-mark" aria-hidden="true"></span></summary>
+        <div class="faq-reply"><span class="faq-avatar faq-avatar--reply" aria-hidden="true">Y</span>
+          <p>Lisans alanını örnek bir anahtarla doldurur; biçim denetimini geçmen için. Sunucu tarafında bir yetki vermez.</p>
+        </div>
+      </details>
 
-    <details><summary>EXE imzasız — Windows uyarı veriyor, sorun olur mu?</summary>
-      <p>Kod imzalama sertifikası olmadığı için SmartScreen uyarır. Dosyayı kendi derlemen veya release'ten
-      indirdiysen <em>Ek bilgi → Yine de çalıştır</em> ile devam edebilirsin.</p>
-    </details>
+      <details class="faq-item"><summary><span class="faq-avatar" aria-hidden="true">S</span><span class="faq-q">EXE imzasız — Windows uyarı veriyor, sorun olur mu?</span><span class="faq-mark" aria-hidden="true"></span></summary>
+        <div class="faq-reply"><span class="faq-avatar faq-avatar--reply" aria-hidden="true">Y</span>
+          <p>Kod imzalama sertifikası olmadığı için SmartScreen uyarır. Dosyayı kendi derlemen veya release'ten
+          indirdiysen <em>Ek bilgi → Yine de çalıştır</em> ile devam edebilirsin.</p>
+        </div>
+      </details>
 
-    <details><summary>Veriler nerede tutuluyor?</summary>
-      <p>Panel tarafında <code>%APPDATA%\ERLIK\config.ini</code> ve günlükler; cihaz/komut/olay/konum verisi
-      sunucunun veri dizinindeki SQLite tabanında. Panel kendi başına veri saklamaz.</p>
-    </details>
+      <details class="faq-item"><summary><span class="faq-avatar" aria-hidden="true">S</span><span class="faq-q">Veriler nerede tutuluyor?</span><span class="faq-mark" aria-hidden="true"></span></summary>
+        <div class="faq-reply"><span class="faq-avatar faq-avatar--reply" aria-hidden="true">Y</span>
+          <p>Panel tarafında <code>%APPDATA%\ERLIK\config.ini</code> ve günlükler; cihaz/komut/olay/konum verisi
+          sunucunun veri dizinindeki SQLite tabanında. Panel kendi başına veri saklamaz.</p>
+        </div>
+      </details>
 
-    <details><summary>Hangi Android sürümleri destekleniyor?</summary>
-      <p>Ajan ayrı bir depoda geliştiriliyor; sürüm gereksinimleri oradaki belgede tanımlı. Panel tarafı
-      Android sürümünden bağımsızdır — sunucunun gördüğü cihaz kaydıyla çalışır.</p>
-    </details>
+      <details class="faq-item"><summary><span class="faq-avatar" aria-hidden="true">S</span><span class="faq-q">Hangi Android sürümleri destekleniyor?</span><span class="faq-mark" aria-hidden="true"></span></summary>
+        <div class="faq-reply"><span class="faq-avatar faq-avatar--reply" aria-hidden="true">Y</span>
+          <p>Ajan ayrı bir depoda geliştiriliyor; sürüm gereksinimleri oradaki belgede tanımlı. Panel tarafı
+          Android sürümünden bağımsızdır — sunucunun gördüğü cihaz kaydıyla çalışır.</p>
+        </div>
+      </details>
 
-    <details><summary>İkinci kez açınca pencere gelmiyor</summary>
-      <p>Tek örnek kilidi devrede: ikinci kopya açılmaz, mevcut pencere öne getirilir. Pencere tepsideyse
-      tepsi simgesine tıkla. Görev yöneticisinde artık <code>ERLIK.exe</code> süreci kalmadığından emin ol.</p>
-    </details>
+      <details class="faq-item"><summary><span class="faq-avatar" aria-hidden="true">S</span><span class="faq-q">İkinci kez açınca pencere gelmiyor</span><span class="faq-mark" aria-hidden="true"></span></summary>
+        <div class="faq-reply"><span class="faq-avatar faq-avatar--reply" aria-hidden="true">Y</span>
+          <p>Tek örnek kilidi devrede: ikinci kopya açılmaz, mevcut pencere öne getirilir. Pencere tepsideyse
+          tepsi simgesine tıkla. Görev yöneticisinde artık <code>ERLIK.exe</code> süreci kalmadığından emin ol.</p>
+        </div>
+      </details>
 
-    <details><summary>Dil değiştirince yeniden başlatmam gerekiyor mu?</summary>
-      <p>Hayır. Dil Ayarlar sayfasından anında değişir; tüm dizeler tek tabloda tutulur, eksik çeviri yoktur.</p>
-    </details>
+      <details class="faq-item"><summary><span class="faq-avatar" aria-hidden="true">S</span><span class="faq-q">Dil değiştirince yeniden başlatmam gerekiyor mu?</span><span class="faq-mark" aria-hidden="true"></span></summary>
+        <div class="faq-reply"><span class="faq-avatar faq-avatar--reply" aria-hidden="true">Y</span>
+          <p>Hayır. Dil Ayarlar sayfasından anında değişir; tüm dizeler tek tabloda tutulur, eksik çeviri yoktur.</p>
+        </div>
+      </details>
 
-    <details><summary>Kendi APK'mı üretmeden cihaz ekleyebilir miyim?</summary>
-      <p>Evet. Ajan zaten kuruluysa <em>Kopya</em> sekmesinden tek kullanımlık anahtar üretip ajana girmen yeterli.
-      APK üretimi, ajanı yeniden paketlemek/özelleştirmek istediğinde gerekir.</p>
-    </details>
+      <details class="faq-item"><summary><span class="faq-avatar" aria-hidden="true">S</span><span class="faq-q">Kendi APK'mı üretmeden cihaz ekleyebilir miyim?</span><span class="faq-mark" aria-hidden="true"></span></summary>
+        <div class="faq-reply"><span class="faq-avatar faq-avatar--reply" aria-hidden="true">Y</span>
+          <p>Evet. Ajan zaten kuruluysa <em>Kopya</em> sekmesinden tek kullanımlık anahtar üretip ajana girmen yeterli.
+          APK üretimi, ajanı yeniden paketlemek/özelleştirmek istediğinde gerekir.</p>
+        </div>
+      </details>
+    </div>
   </section>
 
   <!-- ============ LİSANS ============ -->
@@ -911,20 +976,35 @@ flowchart LR
     <div class="section-head">
       <h2>Lisans ve iletişim</h2>
     </div>
-    <p><strong>Özel / kapalı kaynak.</strong> Yalnızca sahibi olunan veya yönetim yetkisi verilen cihazlarda
-    kullanılmak üzere geliştirilmiştir. Ayrıntılar için depodaki <code>LICENSE</code> dosyasına bak.</p>
-    <div class="table-wrap">
-      <table>
-        <tbody>
-          <tr><td><strong>Geliştirici</strong></td><td>ferit22901</td></tr>
-          <tr><td><strong>Sürüm</strong></td><td>1.0.0</td></tr>
-          <tr><td><strong>Depo</strong></td><td><a href="https://github.com/Memati8383/erlik">github.com/Memati8383/erlik</a></td></tr>
-          <tr><td><strong>Sürümler</strong></td><td><a href="https://github.com/Memati8383/erlik/releases">Releases</a></td></tr>
-          <tr><td><strong>Instagram</strong></td><td><a href="https://www.instagram.com/ferit22901/">@ferit22901</a></td></tr>
-          <tr><td><strong>Motor</strong></td><td>erlik — Go C2 + Kotlin ajan</td></tr>
-          <tr><td><strong>Arayüz</strong></td><td>cobalt — Dear ImGui + DirectX 11</td></tr>
-        </tbody>
-      </table>
+
+    <div class="colophon">
+      <div class="colophon-license">
+        <p class="colophon-tag">Kapalı kaynak</p>
+        <p class="colophon-title">Özel lisans</p>
+        <p class="colophon-text">Yalnızca sahibi olunan veya yönetim yetkisi verilen cihazlarda kullanılmak
+        üzere geliştirilmiştir. Kullanım koşullarının tamamı depodaki lisans dosyasında.</p>
+        <a class="colophon-link" href="https://github.com/Memati8383/erlik/blob/main/LICENSE">
+          LICENSE dosyasını oku
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+        </a>
+      </div>
+
+      <dl class="colophon-list">
+        <div class="colophon-row"><dt>Geliştirici</dt><dd>ferit22901</dd></div>
+        <div class="colophon-row"><dt>Instagram</dt><dd><a href="https://www.instagram.com/ferit22901/">@ferit22901</a></dd></div>
+        <div class="colophon-row"><dt>Depo</dt><dd><a href="https://github.com/Memati8383/erlik">github.com/Memati8383/erlik</a></dd></div>
+        <div class="colophon-row"><dt>Sürümler</dt><dd><a href="https://github.com/Memati8383/erlik/releases">Releases</a></dd></div>
+        <div class="colophon-row"><dt>Sürüm</dt><dd>1.0.0</dd></div>
+        <div class="colophon-row"><dt>Motor</dt><dd>erlik — Go C2 + Kotlin ajan</dd></div>
+        <div class="colophon-row"><dt>Arayüz</dt><dd>cobalt — Dear ImGui + DirectX 11</dd></div>
+      </dl>
+    </div>
+
+    <div class="colophon-sign">
+      <div class="colophon-ink">
+        <p class="colophon-mark" aria-hidden="true">ERLİK</p>
+        <canvas class="colophon-canvas" aria-hidden="true"></canvas>
+      </div>
     </div>
   </section>
 
@@ -949,6 +1029,6 @@ flowchart LR
   <img alt="">
 </div>
 
-<script src="main.js"></script>
+<script src="main.js?v=23"></script>
 </body>
 </html>
